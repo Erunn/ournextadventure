@@ -2,13 +2,12 @@ const DB_URL = "https://timer-92fdd-default-rtdb.europe-west1.firebasedatabase.a
 
 async function initTimer() {
     try {
-        // Cache Buster: Appends a random number so mobile browsers can't use old data
+        // Cache Buster: Appends timestamp so mobile browsers force a fresh fetch
         const response = await fetch(`${DB_URL}?nocache=${Date.now()}`);
         const data = await response.json();
-        
         if (!data) return;
 
-        // 1. Set Titles
+        // 1. Sync Titles
         document.title = data.shareTitle || "Next Adventure";
         const og = document.getElementById("og-title");
         if (og) og.setAttribute("content", data.shareTitle || "Adventure");
@@ -17,7 +16,7 @@ async function initTimer() {
         const emojiKey = (data.emoji || "heart").toLowerCase();
         const emojiChar = (data.emojiLibrary && data.emojiLibrary[emojiKey]) ? data.emojiLibrary[emojiKey] : "❤️";
         
-        let animClass = "anim-bounce"; // Default for heart
+        let animClass = "anim-bounce"; // Default
         switch(emojiKey) {
             case 'star': animClass = "anim-pulse"; break;
             case 'sparkles': animClass = "anim-wiggle"; break;
@@ -30,26 +29,25 @@ async function initTimer() {
             nameEl.innerHTML = `${data.eventName || "Next Adventure"} <span class="${animClass}">${emojiChar}</span>`;
         }
 
-        // 3. useTimer Switch
+        // 3. useTimer Switch Logic
         const showTimer = Number(data.useTimer) === 1;
-        const cdEl = document.getElementById("countdown");
-        const dsEl = document.getElementById("description-display");
+        const countdownEl = document.getElementById("countdown");
+        const descEl = document.getElementById("description-display");
 
         if (showTimer && data.targetDate) {
-            if (cdEl) cdEl.style.display = "flex";
-            if (dsEl) dsEl.style.display = "none";
+            if (countdownEl) countdownEl.style.display = "flex";
+            if (descEl) descEl.style.display = "none";
             startCountdown(data.targetDate, data.celebrationMessage);
         } else {
-            if (cdEl) cdEl.style.display = "none";
-            if (dsEl) {
-                dsEl.style.display = "block";
-                // Pulling from 'description' field
-                dsEl.innerText = data.description || "Coming soon!";
+            if (countdownEl) countdownEl.style.display = "none";
+            if (descEl) {
+                descEl.style.display = "block";
+                // Specifically pulling the 'description' field from Firebase
+                descEl.innerText = data.description || "Our next adventure is coming soon.";
             }
         }
     } catch (e) { 
         console.error("Fetch Error:", e);
-        // Fallback to clear 'Loading' screen if DB fails
         const nameEl = document.getElementById("event-name");
         if (nameEl) nameEl.innerText = "Next Adventure ❤️";
     }
@@ -86,25 +84,26 @@ function startCountdown(dateStr, msg) {
     }, 1000);
 }
 
+// Fixed Randomizer Logic
 window.onload = () => {
     initTimer();
-    
-    // 25% Chance Encounter
     const roll = Math.random();
+    
     if (roll < 0.25) showSuri('suri-1');
     else if (roll < 0.50) showSuri('suri-2');
     else if (roll < 0.75) showSuri('suri-3');
-    else { 
-        createPawTrack(); 
-        setInterval(createPawTrack, 25000); 
+    else {
+        // This ensures paws ALWAYS show if a suri image doesn't
+        createPawTrack();
+        setInterval(createPawTrack, 25000);
     }
 
     const isLight = localStorage.getItem('theme') === 'light';
     if (isLight) document.body.classList.add('light-mode');
-    updateThemeUI(isLight);
+    updateIcons(isLight);
 };
 
-function updateThemeUI(light) {
+function updateIcons(light) {
     const sun = document.getElementById('icon-sun');
     const moon = document.getElementById('icon-moon');
     if (sun) sun.style.display = light ? 'block' : 'none';
@@ -114,7 +113,7 @@ function updateThemeUI(light) {
 document.getElementById('theme-toggle')?.addEventListener('click', () => {
     const light = document.body.classList.toggle('light-mode');
     localStorage.setItem('theme', light ? 'light' : 'dark');
-    updateThemeUI(light);
+    updateIcons(light);
 });
 
 function showSuri(img) {
