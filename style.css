@@ -6,7 +6,6 @@ body {
     color: #ffffff;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
     display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0;
     transition: background-color 0.5s ease;
     overflow-x: hidden; overscroll-behavior-y: contain; 
@@ -20,7 +19,7 @@ body.light-mode {
 
 .timer-container {
     position: relative; text-align: center; width: 90%; max-width: 500px;
-    padding: 20px; z-index: 10; min-height: 200px;
+    padding: 20px; z-index: 100;
     animation: containerFadeIn 0.8s ease-out forwards;
 }
 
@@ -32,7 +31,7 @@ body.light-mode {
 h1 { font-weight: 300; letter-spacing: -0.02em; font-size: 1.8rem; margin-bottom: 30px; }
 #countdown { display: flex; justify-content: space-around; align-items: center; margin: 40px auto; gap: 10px; }
 
-.time-box span { font-family: 'SF Mono', monospace; font-size: clamp(2.5rem, 8vw, 3.5rem); font-weight: 200; display: block; line-height: 1; transition: opacity 0.4s ease; }
+.time-box span { font-family: 'SF Mono', 'Courier New', monospace; font-size: clamp(2.5rem, 8vw, 3.5rem); font-weight: 200; display: block; line-height: 1; transition: opacity 0.4s ease; }
 .time-box span.is-due { opacity: 0.15; }
 
 .label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.1em; margin-top: 10px; color: rgba(255, 255, 255, 0.3); }
@@ -42,8 +41,6 @@ body.light-mode .label { color: rgba(0, 0, 0, 0.4); }
     position: fixed; bottom: 30px; right: 30px; border: none; background: none;
     cursor: pointer; padding: 10px; color: inherit; opacity: 0.4; transition: all 0.4s ease;
 }
-#theme-toggle:hover { opacity: 1; transform: scale(1.1); }
-.theme-icon { transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
 
 #cat-perch { position: fixed; bottom: 20px; left: 20px; width: 100px; height: 100px; z-index: 15; opacity: 0; transition: opacity 1s ease; }
 @media (min-width: 1024px) { #cat-perch { width: 180px; height: 180px; bottom: 40px; left: 40px; } }
