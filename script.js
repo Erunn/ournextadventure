@@ -2,7 +2,7 @@ const DB_URL = "https://timer-92fdd-default-rtdb.europe-west1.firebasedatabase.a
 
 async function initTimer() {
     try {
-        // Cache Buster for fresh mobile data
+        // Cache Buster for mobile refresh
         const response = await fetch(`${DB_URL}?nocache=${Date.now()}`);
         const data = await response.json();
         if (!data) return;
@@ -15,23 +15,15 @@ async function initTimer() {
         if (emojiKey === "bus" || emojiKey === "train") anim = "anim-drive";
         else if (emojiKey === "plane") anim = "anim-takeoff";
 
-        document.getElementById("event-name").innerHTML = 
-            `${data.eventName || "Next Adventure"} <span class="${anim}">${emojiChar}</span>`;
+        const nameEl = document.getElementById("event-name");
+        if (nameEl) nameEl.innerHTML = `${data.eventName || "Next Adventure"} <span class="${anim}">${emojiChar}</span>`;
 
-        // FIX: Toggle Description vs Timer
+        // Visibility Logic
         const showTimer = Number(data.useTimer) === 1;
-        const descEl = document.getElementById("description-display");
-        
         if (showTimer && data.targetDate) {
-            if (descEl) descEl.style.display = "none";
             startCountdown(data.targetDate, data.celebrationMessage);
         } else {
-            document.getElementById("countdown").style.display = "none";
-            document.getElementById("full-date-display").style.display = "none";
-            if (descEl) {
-                descEl.style.display = "block";
-                descEl.innerText = data.description || "Coming soon!";
-            }
+            hideTimer(data.celebrationMessage);
         }
     } catch (e) { console.error(e); }
 }
@@ -80,26 +72,43 @@ function hideTimer(msg) {
     s.innerText = msg || "Adventure Starts! ✨";
 }
 
-window.onload = () => {
-    initTimer();
-    const roll = Math.random();
-    if (roll < 0.33) showSuri('suri-1');
-    else if (roll < 0.66) showSuri('suri-2');
-    else showSuri('suri-3');
-
-    if (localStorage.getItem('theme') === 'light') document.body.classList.add('light-mode');
-};
-
+// Fixed Theme Switch Logic
 document.getElementById('theme-toggle')?.addEventListener('click', () => {
     const light = document.body.classList.toggle('light-mode');
     localStorage.setItem('theme', light ? 'light' : 'dark');
 });
+
+// UPATED Randomizer Logic for 7 Images
+window.onload = () => {
+    initTimer();
+    const roll = Math.random();
+    
+    // Each case has a 14.28% chance (1/7)
+    if (roll < 0.14) {
+        showSuri('suri-1');
+    } else if (roll < 0.28) {
+        showSuri('suri-2');
+    } else if (roll < 0.42) {
+        showSuri('suri-3');
+    } else if (roll < 0.56) {
+        showSuri('suri-4'); // New Image
+    } else if (roll < 0.70) {
+        showSuri('suri-5'); // New Image
+    } else if (roll < 0.84) {
+        showSuri('suri-6'); // New Image
+    } else {
+        showSuri('suri-7'); // New Image
+    }
+
+    if (localStorage.getItem('theme') === 'light') document.body.classList.add('light-mode');
+};
 
 function showSuri(img) {
     const p = document.getElementById('cat-perch');
     if (p) {
         const c = document.createElement('div');
         c.className = `cat-image ${img}`;
+        p.innerHTML = ''; // Clear previous cat if necessary
         p.appendChild(c);
         setTimeout(() => p.style.opacity = "1", 500);
     }
