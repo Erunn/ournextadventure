@@ -2,25 +2,33 @@ const DB_URL = "https://timer-92fdd-default-rtdb.europe-west1.firebasedatabase.a
 
 async function initTimer() {
     try {
-        const response = await fetch(`${DB_URL}?v=${new Date().getTime()}`);
+        // Cache Buster: Appends a random number so mobile browsers can't use old data
+        const response = await fetch(`${DB_URL}?nocache=${Date.now()}`);
         const data = await response.json();
+        
         if (!data) return;
 
-        // 1. Titles & Metadata
+        // 1. Set Titles
         document.title = data.shareTitle || "Next Adventure";
         const og = document.getElementById("og-title");
         if (og) og.setAttribute("content", data.shareTitle || "Adventure");
 
-        // 2. Emoji & Animation Logic
+        // 2. Emoji Animation Logic - FIXED
         const emojiKey = (data.emoji || "heart").toLowerCase();
-        const emoji = (data.emojiLibrary && data.emojiLibrary[emojiKey]) ? data.emojiLibrary[emojiKey] : "❤️";
-        let anim = "anim-bounce";
-        if (emojiKey === "star") anim = "anim-pulse";
-        if (emojiKey === "sparkles") anim = "anim-wiggle";
-        if (emojiKey === "cloud") anim = "anim-float";
+        const emojiChar = (data.emojiLibrary && data.emojiLibrary[emojiKey]) ? data.emojiLibrary[emojiKey] : "❤️";
+        
+        let animClass = "anim-bounce"; // Default for heart
+        switch(emojiKey) {
+            case 'star': animClass = "anim-pulse"; break;
+            case 'sparkles': animClass = "anim-wiggle"; break;
+            case 'cloud': animClass = "anim-float"; break;
+            case 'sun': animClass = "anim-float"; break; 
+        }
 
         const nameEl = document.getElementById("event-name");
-        if (nameEl) nameEl.innerHTML = `${data.eventName || "Next Adventure"} <span class="${anim}">${emoji}</span>`;
+        if (nameEl) {
+            nameEl.innerHTML = `${data.eventName || "Next Adventure"} <span class="${animClass}">${emojiChar}</span>`;
+        }
 
         // 3. useTimer Switch
         const showTimer = Number(data.useTimer) === 1;
@@ -35,12 +43,13 @@ async function initTimer() {
             if (cdEl) cdEl.style.display = "none";
             if (dsEl) {
                 dsEl.style.display = "block";
-                // Pointing to 'description' field in DB
+                // Pulling from 'description' field
                 dsEl.innerText = data.description || "Coming soon!";
             }
         }
     } catch (e) { 
-        console.error(e);
+        console.error("Fetch Error:", e);
+        // Fallback to clear 'Loading' screen if DB fails
         const nameEl = document.getElementById("event-name");
         if (nameEl) nameEl.innerText = "Next Adventure ❤️";
     }
@@ -77,21 +86,25 @@ function startCountdown(dateStr, msg) {
     }, 1000);
 }
 
-// Encounter Randomizer
 window.onload = () => {
     initTimer();
+    
+    // 25% Chance Encounter
     const roll = Math.random();
     if (roll < 0.25) showSuri('suri-1');
     else if (roll < 0.50) showSuri('suri-2');
     else if (roll < 0.75) showSuri('suri-3');
-    else { createPawTrack(); setInterval(createPawTrack, 25000); }
+    else { 
+        createPawTrack(); 
+        setInterval(createPawTrack, 25000); 
+    }
 
     const isLight = localStorage.getItem('theme') === 'light';
     if (isLight) document.body.classList.add('light-mode');
-    updateTheme(isLight);
+    updateThemeUI(isLight);
 };
 
-function updateTheme(light) {
+function updateThemeUI(light) {
     const sun = document.getElementById('icon-sun');
     const moon = document.getElementById('icon-moon');
     if (sun) sun.style.display = light ? 'block' : 'none';
@@ -101,7 +114,7 @@ function updateTheme(light) {
 document.getElementById('theme-toggle')?.addEventListener('click', () => {
     const light = document.body.classList.toggle('light-mode');
     localStorage.setItem('theme', light ? 'light' : 'dark');
-    updateTheme(light);
+    updateThemeUI(light);
 });
 
 function showSuri(img) {
@@ -124,8 +137,9 @@ function createPawTrack() {
             const paw = document.createElement('div');
             paw.className = 'paw-print';
             const side = i % 2 === 0 ? 1 : -1;
-            const finalX = x + (i * 70 * Math.cos(angle * Math.PI / 180)) + (20 * Math.cos((angle + 90 * side) * Math.PI / 180));
-            const finalY = y + (i * 70 * Math.sin(angle * Math.PI / 180)) + (20 * Math.sin((angle + 90 * side) * Math.PI / 180));
+            const moveAngle = angle * (Math.PI / 180);
+            const finalX = x + (i * 70 * Math.cos(moveAngle)) + (20 * Math.cos((angle + 90 * side) * Math.PI / 180));
+            const finalY = y + (i * 70 * Math.sin(moveAngle)) + (20 * Math.sin((angle + 90 * side) * Math.PI / 180));
             paw.style.left = `${finalX}px`;
             paw.style.top = `${finalY}px`;
             paw.style.setProperty('--rot', `${angle + 90}deg`);
