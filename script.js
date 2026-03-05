@@ -6,10 +6,15 @@ async function initTimer() {
         const data = await response.json();
         if (!data) return;
 
-        // 1. Set Emoji and Animation
+        // 1. FIX: Sync Browser Tab Title with 'shareTitle'
+        const finalTitle = data.shareTitle || "Next Adventure";
+        document.title = finalTitle; 
+        const og = document.getElementById("og-title");
+        if (og) og.setAttribute("content", finalTitle);
+
+        // 2. Emoji Logic
         const emojiKey = (data.emoji || "heart").toLowerCase();
         const emojiChar = (data.emojiLibrary && data.emojiLibrary[emojiKey]) ? data.emojiLibrary[emojiKey] : "❤️";
-        
         let anim = "anim-bounce";
         if (emojiKey === "bus" || emojiKey === "train") anim = "anim-drive";
         else if (emojiKey === "plane") anim = "anim-takeoff";
@@ -17,13 +22,12 @@ async function initTimer() {
         const nameEl = document.getElementById("event-name");
         if (nameEl) nameEl.innerHTML = `${data.eventName || "Next Adventure"} <span class="${anim}">${emojiChar}</span>`;
 
-        // 2. Fix Visibility Logic
+        // 3. useTimer Switch Logic
         const showTimer = Number(data.useTimer) === 1;
         const countdownEl = document.getElementById("countdown");
         const descEl = document.getElementById("description-display");
 
         if (showTimer && data.targetDate) {
-            // Force the timer to show as flex
             if (countdownEl) countdownEl.style.setProperty("display", "flex", "important");
             if (descEl) descEl.style.display = "none";
             startCountdown(data.targetDate, data.celebrationMessage);
@@ -31,7 +35,7 @@ async function initTimer() {
             if (countdownEl) countdownEl.style.display = "none";
             if (descEl) {
                 descEl.style.display = "block";
-                descEl.innerText = data.description || "Coming soon!";
+                descEl.innerText = data.description || "Our next adventure is coming soon.";
             }
         }
     } catch (e) { console.error(e); }
@@ -41,6 +45,7 @@ function startCountdown(dateStr, msg) {
     const parts = dateStr.split(/[-/ :]/);
     const target = new Date(parts[2], parts[1]-1, parts[0], parts[3]||0, parts[4]||0).getTime();
     
+    // Set text date display
     const fd = document.getElementById("full-date-display");
     if (fd) {
         fd.innerText = new Date(target).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
@@ -49,17 +54,32 @@ function startCountdown(dateStr, msg) {
 
     const x = setInterval(() => {
         const dist = target - new Date().getTime();
+        
+        const dEl = document.getElementById("days");
+        const hEl = document.getElementById("hours");
+        const mEl = document.getElementById("minutes");
+        const sEl = document.getElementById("seconds");
+
         if (dist <= 0) {
+            // FIX: If time is up, dim all units
+            [dEl, hEl, mEl, sEl].forEach(el => { if(el) { el.innerText = "00"; el.classList.add("is-due"); } });
             clearInterval(x);
-            if (document.getElementById("countdown")) document.getElementById("countdown").style.display = "none";
             const s = document.getElementById("status-message");
             if (s) { s.style.display = "block"; s.innerText = msg || "Adventure Starts! ✨"; }
             return;
         }
-        document.getElementById("days").innerText = Math.floor(dist / 86400000).toString().padStart(2, '0');
-        document.getElementById("hours").innerText = Math.floor((dist % 86400000) / 3600000).toString().padStart(2, '0');
-        document.getElementById("minutes").innerText = Math.floor((dist % 3600000) / 60000).toString().padStart(2, '0');
-        document.getElementById("seconds").innerText = Math.floor((dist % 60000) / 1000).toString().padStart(2, '0');
+
+        const d = Math.floor(dist / 86400000);
+        const h = Math.floor((dist % 86400000) / 3600000);
+        const m = Math.floor((dist % 3600000) / 60000);
+        const s = Math.floor((dist % 60000) / 1000);
+
+        // FIX: Dim individual units as they reach zero
+        if (dEl) { dEl.innerText = d.toString().padStart(2, '0'); d === 0 ? dEl.classList.add("is-due") : dEl.classList.remove("is-due"); }
+        if (hEl) { hEl.innerText = h.toString().padStart(2, '0'); (d === 0 && h === 0) ? hEl.classList.add("is-due") : hEl.classList.remove("is-due"); }
+        if (mEl) { mEl.innerText = m.toString().padStart(2, '0'); (d === 0 && h === 0 && m === 0) ? mEl.classList.add("is-due") : mEl.classList.remove("is-due"); }
+        if (sEl) { sEl.innerText = s.toString().padStart(2, '0'); }
+
     }, 1000);
 }
 
