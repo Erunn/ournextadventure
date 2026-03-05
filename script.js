@@ -2,6 +2,7 @@ const DB_URL = "https://timer-92fdd-default-rtdb.europe-west1.firebasedatabase.a
 
 async function initTimer() {
     try {
+        // Cache Buster for fresh mobile data
         const response = await fetch(`${DB_URL}?nocache=${Date.now()}`);
         const data = await response.json();
         if (!data) return;
@@ -17,11 +18,20 @@ async function initTimer() {
         document.getElementById("event-name").innerHTML = 
             `${data.eventName || "Next Adventure"} <span class="${anim}">${emojiChar}</span>`;
 
+        // FIX: Toggle Description vs Timer
         const showTimer = Number(data.useTimer) === 1;
+        const descEl = document.getElementById("description-display");
+        
         if (showTimer && data.targetDate) {
+            if (descEl) descEl.style.display = "none";
             startCountdown(data.targetDate, data.celebrationMessage);
         } else {
-            hideTimer(data.celebrationMessage);
+            document.getElementById("countdown").style.display = "none";
+            document.getElementById("full-date-display").style.display = "none";
+            if (descEl) {
+                descEl.style.display = "block";
+                descEl.innerText = data.description || "Coming soon!";
+            }
         }
     } catch (e) { console.error(e); }
 }
@@ -31,7 +41,6 @@ function startCountdown(dateStr, msg) {
     const targetDateObj = new Date(parts[2], parts[1]-1, parts[0], parts[3]||0, parts[4]||0);
     const target = targetDateObj.getTime();
 
-    // Show Full Date Display
     const fd = document.getElementById("full-date-display");
     if (fd) {
         fd.innerText = targetDateObj.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
