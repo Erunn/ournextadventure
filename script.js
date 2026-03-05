@@ -14,7 +14,6 @@ async function initTimer() {
         document.getElementById("event-name").innerHTML = 
             `${data.eventName || "Next Adventure"} <span>${emojiChar}</span>`;
 
-        // Updated Variable: noTimerMessage
         const showTimer = Number(data.useTimer) === 1;
         const noTimerEl = document.getElementById("description-display");
         
@@ -26,7 +25,6 @@ async function initTimer() {
             document.getElementById("full-date-display").style.display = "none";
             if (noTimerEl) {
                 noTimerEl.style.display = "block";
-                // Now picking up 'noTimerMessage' from your DB
                 noTimerEl.innerText = data.noTimerMessage || "Our next adventure is coming soon.";
             }
         }
@@ -93,7 +91,6 @@ document.getElementById('theme-toggle')?.addEventListener('click', () => {
     updateThemeIcons(isLight);
 });
 
-// BUG FIX: Cats now load independently of the timer status
 window.onload = () => {
     initTimer();
     const roll = Math.random();
