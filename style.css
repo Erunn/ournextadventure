@@ -1,4 +1,3 @@
-/* Core Layout & Mobile Refresh */
 body {
     background-color: #121417;
     background-image: radial-gradient(circle at top, #1c1f26, #121417);
@@ -15,7 +14,6 @@ body.light-mode {
     color: #111827;
 }
 
-/* Smooth Container Fade-in */
 .timer-container {
     position: relative; text-align: center; width: 90%; max-width: 500px;
     padding: 20px; z-index: 10;
@@ -36,7 +34,6 @@ h1 { font-weight: 300; letter-spacing: -0.02em; font-size: 1.8rem; margin-bottom
 .label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.1em; margin-top: 10px; color: rgba(255, 255, 255, 0.3); }
 body.light-mode .label { color: rgba(0, 0, 0, 0.4); }
 
-/* Theme Toggle Icons */
 #theme-toggle {
     position: fixed; bottom: 30px; right: 30px; border: none; background: none;
     cursor: pointer; padding: 10px; color: inherit; opacity: 0.4; transition: all 0.4s ease;
@@ -44,7 +41,18 @@ body.light-mode .label { color: rgba(0, 0, 0, 0.4); }
 #theme-toggle:hover { opacity: 1; transform: scale(1.1); }
 .theme-icon { transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
 
-/* Cat Elements */
 #cat-perch { position: fixed; bottom: 20px; left: 20px; width: 100px; height: 100px; z-index: 15; opacity: 0; transition: opacity 1s ease; }
 @media (min-width: 1024px) { #cat-perch { width: 180px; height: 180px; bottom: 40px; left: 40px; } }
-.cat-image { width: 100%; height:
+.cat-image { width: 100%; height: 100%; background-size: contain; background-repeat: no-repeat; background-position: bottom left; }
+
+/* Dynamic Image Mapping */
+.suri-1 { background-image: url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri1.png'); }
+.suri-2 { background-image: url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri2.png'); }
+.suri-3 { background-image: url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri3.png'); }
+.suri-4 { background-image: url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri4.png'); }
+.suri-5 { background-image: url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri5.png'); }
+.suri-6 { background-image: url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri6.png'); }
+.suri-7 { background-image: url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri7.png'); }
+
+#status-message { font-weight: 300; font-size: 1.1rem; opacity: 0.8; margin-top: 20px; }
+#description-display, #full-date-display { margin-top: 25px; font-size: 0.95rem; font-weight: 300; opacity: 0.6; line-height: 1.6; }
