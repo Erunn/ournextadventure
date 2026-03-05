@@ -28,9 +28,7 @@ body.light-mode .timer-container {
 }
 
 #countdown { display: flex; gap: 15px; justify-content: center; margin: 20px auto; }
-
-.time-box span { font-family: 'SF Mono', monospace; font-size: clamp(2.2rem, 7vw, 4rem); display: block; }
-
+.time-box span { font-family: 'SF Mono', monospace; font-size: clamp(2rem, 7vw, 4rem); display: block; }
 .label { font-size: 0.75rem; text-transform: uppercase; color: rgba(255, 255, 255, 0.4); }
 body.light-mode .label { color: #636e72 !important; font-weight: 500; }
 
