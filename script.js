@@ -6,35 +6,25 @@ async function initTimer() {
         const data = await response.json();
         if (!data) return;
 
-        // 1. Sync Tab Name with 'shareTitle'
-        const finalTitle = data.shareTitle || "Next Adventure";
-        document.title = finalTitle; 
-        const og = document.getElementById("og-title");
-        if (og) og.setAttribute("content", finalTitle);
+        // Sync Tab Name
+        document.title = data.shareTitle || "Next Adventure";
 
-        // 2. Emoji Logic
+        // Emoji & Animation
         const emojiKey = (data.emoji || "heart").toLowerCase();
         const emojiChar = (data.emojiLibrary && data.emojiLibrary[emojiKey]) ? data.emojiLibrary[emojiKey] : "❤️";
         let anim = "anim-bounce";
         if (emojiKey === "bus" || emojiKey === "train") anim = "anim-drive";
         else if (emojiKey === "plane") anim = "anim-takeoff";
 
-        const nameEl = document.getElementById("event-name");
-        if (nameEl) nameEl.innerHTML = `${data.eventName || "Next Adventure"} <span class="${anim}">${emojiChar}</span>`;
+        document.getElementById("event-name").innerHTML = 
+            `${data.eventName || "Next Adventure"} <span class="${anim}">${emojiChar}</span>`;
 
-        // 3. Visibility Logic
+        // Visibility Logic
         const showTimer = Number(data.useTimer) === 1;
-        const countdownEl = document.getElementById("countdown");
-        const statusEl = document.getElementById("status-message");
-
         if (showTimer && data.targetDate) {
             startCountdown(data.targetDate, data.celebrationMessage);
         } else {
-            if (countdownEl) countdownEl.style.display = "none";
-            if (statusEl) {
-                statusEl.style.display = "block";
-                statusEl.innerText = data.celebrationMessage || "Adventure Starts! ✨";
-            }
+            hideTimer(data.celebrationMessage);
         }
     } catch (e) { console.error(e); }
 }
@@ -42,40 +32,51 @@ async function initTimer() {
 function startCountdown(dateStr, msg) {
     const parts = dateStr.split(/[-/ :]/);
     const target = new Date(parts[2], parts[1]-1, parts[0], parts[3]||0, parts[4]||0).getTime();
-    const countdownEl = document.getElementById("countdown");
-    const dateDisplay = document.getElementById("full-date-display");
-    const statusEl = document.getElementById("status-message");
 
     const x = setInterval(() => {
         const dist = target - new Date().getTime();
-
+        
         if (dist <= 0) {
-            // FIX: Hide timer and date if past
             clearInterval(x);
-            if (countdownEl) countdownEl.style.display = "none";
-            if (dateDisplay) dateDisplay.style.display = "none";
-            if (statusEl) {
-                statusEl.style.display = "block";
-                statusEl.innerText = msg || "The moment is here! ✨";
-            }
+            hideTimer(msg);
             return;
         }
 
-        // Show elements while active
-        if (countdownEl) countdownEl.style.setProperty("display", "flex", "important");
-        if (dateDisplay) {
-            dateDisplay.innerText = new Date(target).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-            dateDisplay.style.display = "block";
-        }
+        document.getElementById("countdown").style.display = "flex";
+        const d = Math.floor(dist / 86400000);
+        const h = Math.floor((dist % 86400000) / 3600000);
+        const m = Math.floor((dist % 3600000) / 60000);
+        const s = Math.floor((dist % 60000) / 1000);
 
-        document.getElementById("days").innerText = Math.floor(dist / 86400000).toString().padStart(2, '0');
-        document.getElementById("hours").innerText = Math.floor((dist % 86400000) / 3600000).toString().padStart(2, '0');
-        document.getElementById("minutes").innerText = Math.floor((dist % 3600000) / 60000).toString().padStart(2, '0');
-        document.getElementById("seconds").innerText = Math.floor((dist % 60000) / 1000).toString().padStart(2, '0');
+        updateUnit("days", d);
+        updateUnit("hours", h);
+        updateUnit("minutes", m);
+        updateUnit("seconds", s);
     }, 1000);
 }
 
-// Randomizer and Theme Setup
+// FIX: Helper to apply dimming
+function updateUnit(id, value) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.innerText = value.toString().padStart(2, '0');
+    // If value is 0, add 'is-due' class to dim it
+    if (value === 0) {
+        el.classList.add("is-due");
+    } else {
+        el.classList.remove("is-due");
+    }
+}
+
+function hideTimer(msg) {
+    document.getElementById("countdown").style.display = "none";
+    document.getElementById("full-date-display").style.display = "none";
+    const s = document.getElementById("status-message");
+    s.style.display = "block";
+    s.innerText = msg || "Adventure Starts! ✨";
+}
+
+// Standard Randomizer & Theme Logic
 window.onload = () => {
     initTimer();
     const roll = Math.random();
@@ -86,29 +87,21 @@ window.onload = () => {
 
     const isLight = localStorage.getItem('theme') === 'light';
     if (isLight) document.body.classList.add('light-mode');
-    updateUI(isLight);
 };
-
-function updateUI(light) {
-    const sun = document.getElementById('icon-sun');
-    const moon = document.getElementById('icon-moon');
-    if (sun) sun.style.display = light ? 'block' : 'none';
-    if (moon) moon.style.display = light ? 'none' : 'block';
-}
 
 document.getElementById('theme-toggle')?.addEventListener('click', () => {
     const light = document.body.classList.toggle('light-mode');
     localStorage.setItem('theme', light ? 'light' : 'dark');
-    updateUI(light);
 });
 
 function showSuri(img) {
     const p = document.getElementById('cat-perch');
-    if (!p) return;
-    const c = document.createElement('div');
-    c.className = `cat-image ${img}`;
-    p.appendChild(c);
-    setTimeout(() => p.style.opacity = "1", 500);
+    if (p) {
+        const c = document.createElement('div');
+        c.className = `cat-image ${img}`;
+        p.appendChild(c);
+        setTimeout(() => p.style.opacity = "1", 500);
+    }
 }
 
 function createPawTrack() {
