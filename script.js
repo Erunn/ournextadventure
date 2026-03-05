@@ -32,7 +32,7 @@ function createPawTrack() {
             paw.style.left = `${finalX}px`;
             paw.style.top = `${finalY}px`;
             
-            // Toes lead the way
+            // Toes lead the way (image_0.png gait fix)
             paw.style.setProperty('--rot', `${angle + 90}deg`);
             container.appendChild(paw);
             setTimeout(() => paw.remove(), 7000);
@@ -46,13 +46,10 @@ async function initTimer() {
         const data = await response.json();
         if (!data) return;
 
-        // Pulling from your DB fields: "test" and "test2"
+        // DB-Linked Title for image_2.png share fix
         const sTitle = data.shareTitle || "Our Next Adventure";
-        const mDesc = data.metaDescription || "A special countdown.";
-        
         document.title = sTitle;
         document.getElementById("og-title").setAttribute("content", sTitle);
-        document.getElementById("meta-desc").setAttribute("content", mDesc);
 
         let currentEventName = data.eventName || "Next Adventure";
         const emojiKey = (data.emoji || "heart").toLowerCase();
@@ -113,7 +110,7 @@ if (btn) {
     });
 }
 
-// 50/50 Chance on load
+// 50/50 Randomizer
 window.addEventListener('load', () => {
     if (Math.random() < 0.5) showSleepingCat();
     else {
