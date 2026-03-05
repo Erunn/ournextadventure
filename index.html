@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Next Adventure</title>
     <script>
+        // Versioning helps mobile browsers skip the cache
         var v = new Date().getTime();
         document.write('<link rel="stylesheet" href="style.css?v=' + v + '">');
     </script>
@@ -12,7 +13,7 @@
 <body>
     <div id="cat-perch"></div> 
     <div class="timer-container">
-        <h1 id="event-name">Loading...</h1>
+        <h1 id="event-name">Next Adventure ❤️</h1>
         
         <div id="countdown" style="display: none;">
             <div class="time-box"><span id="days">00</span><div class="label">Days</div></div>
@@ -21,7 +22,6 @@
             <div class="time-box"><span id="seconds">00</span><div class="label">Sec</div></div>
         </div>
 
-        <div id="description-display" style="display: none;"></div>
         <div id="full-date-display" style="display: none;"></div>
         <p id="status-message" style="display: none;"></p>
     </div>
