@@ -16,18 +16,13 @@ body.light-mode {
 
 .timer-container {
     position: relative; text-align: center; padding: 60px 20px; 
-    background: rgba(255, 255, 255, 0.03);
-    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 24px;
     width: 90%; max-width: 600px; z-index: 10;
 }
+body.light-mode .timer-container { background: rgba(255, 255, 255, 0.85); border: 1px solid rgba(0, 0, 0, 0.1); }
 
-body.light-mode .timer-container {
-    background: rgba(255, 255, 255, 0.85);
-    border: 1px solid rgba(0, 0, 0, 0.1);
-}
-
-/* Unique Emoji Animations */
+/* Emoji Animations */
 .anim-bounce { display: inline-block; animation: ebounce 2s infinite ease-in-out; }
 .anim-pulse { display: inline-block; animation: epulse 1.2s infinite ease-in-out; }
 .anim-wiggle { display: inline-block; animation: ewiggle 0.8s infinite ease-in-out; }
@@ -38,40 +33,32 @@ body.light-mode .timer-container {
 @keyframes ewiggle { 0%, 100% { transform: rotate(0deg); } 25% { transform: rotate(20deg); } 75% { transform: rotate(-20deg); } }
 @keyframes efloat { 0%, 100% { transform: translateY(0) translateX(0); } 50% { transform: translateY(-10px) translateX(5px); } }
 
-/* Layout Elements */
 #countdown { display: flex; gap: 15px; justify-content: center; margin: 20px auto; }
-.time-box span { font-family: 'SF Mono', monospace; font-size: clamp(2.2rem, 7vw, 4rem); display: block; line-height: 1; }
+.time-box span { font-family: 'SF Mono', monospace; font-size: clamp(2rem, 7vw, 4rem); display: block; }
 .label { font-size: 0.75rem; text-transform: uppercase; color: rgba(255, 255, 255, 0.4); }
-body.light-mode .label { color: #636e72 !important; font-weight: 500; }
+body.light-mode .label { color: #636e72 !important; }
 
 #description-display { font-size: 1.4rem; font-weight: 400; margin: 20px 0; line-height: 1.5; }
 
-/* Fixed Theme Toggle - Visible Borders */
+/* Fixed Theme Button Border */
 #theme-toggle {
     position: fixed; bottom: 30px; right: 30px; width: 48px; height: 48px;
     border-radius: 12px; cursor: pointer; display: flex; align-items: center; 
     justify-content: center; z-index: 1000; transition: all 0.3s ease;
-    background: rgba(255, 255, 255, 0.05); 
-    border: 1px solid rgba(255, 255, 255, 0.3); 
+    background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.3); 
     color: inherit;
 }
-body.light-mode #theme-toggle { 
-    background: rgba(0, 0, 0, 0.03); 
-    border: 1px solid rgba(0, 0, 0, 0.3); 
-}
+body.light-mode #theme-toggle { background: rgba(0, 0, 0, 0.03); border: 1px solid rgba(0, 0, 0, 0.3); }
 
-/* Cat Elements */
 #cat-perch { position: absolute; top: -85px; right: 20px; width: 120px; height: 120px; z-index: 15; opacity: 0; transition: opacity 1s ease; }
 .cat-image { width: 100%; height: 100%; background-size: contain; background-repeat: no-repeat; background-position: bottom; }
 .suri-1 { background-image: url('suri1.png'); }
 .suri-2 { background-image: url('suri2.png'); }
 .suri-3 { background-image: url('suri3.png'); }
 
-/* Walking Paws */
 #cat-encounter-container { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 5; }
 .paw-print {
-    position: absolute; width: 45px; height: 45px; 
-    background-color: rgba(255, 255, 255, 0.5);
+    position: absolute; width: 45px; height: 45px; background-color: rgba(255, 255, 255, 0.5);
     -webkit-mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12,18c-1.5,0-3-0.5-3.5-1.5c-0.5-1,0-2.5,1-3.5c1-1,2.5-1.5,4.5-1.5s3.5,0.5,4.5,1.5c1,1,1.5,2.5,1,3.5C19,17.5,17.5,18,16,18H12z M7,11c-0.8,0-1.5-0.7-1.5-1.5S6.2,8,7,8s1.5,0.7,1.5,1.5S7.8,11,7,11z M10,7c-0.8,0-1.5-0.7-1.5-1.5S9.2,4,10,4s1.5,0.7,1.5,1.5S10.8,7,10,7z M15,7c0.8,0,1.5-0.7,1.5-1.5S15.8,4,15,4s-1.5,0.7-1.5,1.5S14.2,7,15,7z M18,11c0.8,0,1.5-0.7,1.5-1.5S18.8,8,18,8s-1.5,0.7-1.5,1.5S17.2,11,18,11z"/></svg>') no-repeat center;
     mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12,18c-1.5,0-3-0.5-3.5-1.5c-0.5-1,0-2.5,1-3.5c1-1,2.5-1.5,4.5-1.5s3.5,0.5,4.5,1.5c1,1,1.5,2.5,1,3.5C19,17.5,17.5,18,16,18H12z M7,11c-0.8,0-1.5-0.7-1.5-1.5S6.2,8,7,8s1.5,0.7,1.5,1.5S7.8,11,7,11z M10,7c-0.8,0-1.5-0.7-1.5-1.5S9.2,4,10,4s1.5,0.7,1.5,1.5S10.8,7,10,7z M15,7c0.8,0,1.5-0.7,1.5-1.5S15.8,4,15,4s-1.5,0.7-1.5,1.5S14.2,7,15,7z M18,11c0.8,0,1.5-0.7,1.5-1.5S18.8,8,18,8s-1.5,0.7-1.5,1.5S17.2,11,18,11z"/></svg>') no-repeat center;
     opacity: 0; animation: pawFade 7s ease-in-out forwards;
