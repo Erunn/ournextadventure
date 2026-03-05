@@ -10,31 +10,28 @@
         var v = new Date().getTime();
         document.write('<link rel="stylesheet" href="style.css?v=' + v + '">');
     </script>
-    <script>
-        document.write('<script src="script.js?v=' + new Date().getTime() + '" defer><\/script>');
-    </script>
 </head>
 <body>
-    <div class="timer-container">
-        <div id="cat-perch"></div> 
-        
-        <button id="theme-toggle" aria-label="Toggle Theme">
-            <svg id="sun-icon" style="display:none;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
-            <svg id="moon-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
-        </button>
+    <div id="cat-perch" class="sync-reveal"></div> 
 
+    <button id="theme-toggle" class="sync-reveal" aria-label="Toggle Theme">
+        <svg id="sun-icon" style="display:none;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+        <svg id="moon-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+    </button>
+
+    <div class="timer-container sync-reveal">
         <h1 id="event-name">Loading...</h1>
-        
         <div id="countdown" style="display: none;">
             <div class="time-box"><span id="days">00</span><div class="label">Days</div></div>
             <div class="time-box"><span id="hours">00</span><div class="label">Hrs</div></div>
             <div class="time-box"><span id="minutes">00</span><div class="label">Min</div></div>
             <div class="time-box"><span id="seconds">00</span><div class="label">Sec</div></div>
         </div>
-
         <div id="description-display" style="display: none;"></div>
         <div id="full-date-display" style="display: none;"></div>
         <p id="status-message" style="display: none;"></p>
     </div>
+
+    <script>document.write('<script src="script.js?v=' + v + '"><\/script>');</script>
 </body>
 </html>
