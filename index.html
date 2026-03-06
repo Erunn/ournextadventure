@@ -25,13 +25,11 @@
 
         body {
             background-color: var(--bg-dark);
-            /* Noise texture + Gradient */
             background-image: 
                 url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),
                 radial-gradient(circle at top, #1c1f26, var(--bg-dark));
             background-blend-mode: overlay;
             color: var(--accent);
-            /* System fonts to prevent CORS "broken font" look */
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             -webkit-font-smoothing: antialiased;
             display: flex; justify-content: center; align-items: center; 
@@ -47,7 +45,6 @@
             color: #111827;
         }
 
-        /* Initial state is invisible; Script adds .reveal to fade in */
         .sync-reveal {
             opacity: 0;
             transform: translateY(12px) translateZ(0);
@@ -78,7 +75,12 @@
             contain: content;
         }
 
-        .time-box span.is-due { opacity: 0.12; filter: blur(0.5px); transform: scale(0.92); }
+        /* Restored Dimming Style */
+        .time-box span.is-due { 
+            opacity: 0.12; 
+            filter: blur(0.5px); 
+            transform: scale(0.92); 
+        }
 
         .label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.12em; margin-top: 10px; color: rgba(255, 255, 255, 0.4); font-weight: 500; }
         body.light-mode .label { color: rgba(0, 0, 0, 0.5); }
@@ -106,7 +108,7 @@
             contain: content;
         }
 
-        /* Suri Images */
+        /* Suri Asset Mapping */
         .suri-1 { background-image: url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri1.png'); }
         .suri-2 { background-image: url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri2.png'); }
         .suri-3 { background-image: url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri3.png'); }
@@ -132,22 +134,4 @@
             <div class="time-box"><span id="days">00</span><div class="label">days</div></div>
             <div class="time-box"><span id="hours">00</span><div class="label">hrs</div></div>
             <div class="time-box"><span id="minutes">00</span><div class="label">min</div></div>
-            <div class="time-box"><span id="seconds">00</span><div class="label">sec</div></div>
-        </div>
-        <div id="description-display" style="display: none;"></div>
-        <div id="full-date-display" style="display: none;"></div>
-    </main>
-
-    <script src="script.js?v=2" defer></script>
-    <script>
-        // PWA Service Worker
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js').catch(() => {});
-        }
-        // Simplified view for low-memory devices
-        if (navigator.deviceMemory && navigator.deviceMemory < 2) {
-            document.body.style.backgroundImage = 'none';
-        }
-    </script>
-</body>
-</html>
+            <div class="time-box"><span id
