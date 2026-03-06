@@ -13,6 +13,7 @@ const UI = {
 
     async load() {
         try {
+            // Versioning query to bypass aggressive caching
             const r = await fetch(`${this.config.DB}?v=${Date.now()}`);
             const d = await r.json();
             if (!d) throw 0;
@@ -52,16 +53,20 @@ const UI = {
                 seconds: Math.floor((dist % 60000) / 1000)
             };
 
-            ['days', 'hours', 'minutes', 'seconds'].forEach(u => {
+            // Efficiently loop through time units
+            const units = ['days', 'hours', 'minutes', 'seconds'];
+            for (let i = 0; i < units.length; i++) {
+                const u = units[i];
                 const el = document.getElementById(u);
                 el.innerText = t[u].toString().padStart(2, '0');
+                
                 if (u !== 'seconds') {
                     const isPast = (u === 'days' && t.days === 0) || 
                                    (u === 'hours' && t.days === 0 && t.hours === 0) || 
                                    (u === 'minutes' && t.days === 0 && t.hours === 0 && t.minutes === 0);
                     el.classList.toggle('is-due', isPast);
                 }
-            });
+            }
 
             document.getElementById("countdown").style.display = "flex";
             this.reveal();
