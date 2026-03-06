@@ -1,6 +1,6 @@
 {
-  "name": "Next Adventure",
-  "short_name": "Adventure",
+  "name": "next adventure",
+  "short_name": "adventure",
   "start_url": ".",
   "display": "standalone",
   "background_color": "#121417",
