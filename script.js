@@ -41,7 +41,6 @@ const UI = {
             fd.style.display = "block";
         }
 
-        // Cache elements to avoid repeated searching
         const els = {
             days: document.getElementById('days'),
             hours: document.getElementById('hours'),
