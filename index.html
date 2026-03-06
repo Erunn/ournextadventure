@@ -8,13 +8,6 @@
     <link rel="manifest" href="manifest.json">
     <title>Next Adventure</title>
     
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preconnect" href="https://raw.githubusercontent.com">
-    
-    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/Erunn/ournextadventure/main/favicon.png">
-    <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/Erunn/ournextadventure/main/icon.png">
-
     <style>
         :root {
             --bg-dark: #121417;
@@ -32,11 +25,12 @@
                 radial-gradient(circle at top, #1c1f26, var(--bg-dark));
             background-blend-mode: overlay;
             color: var(--accent);
+            /* Fix: System font stack to avoid CORS font errors */
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             -webkit-font-smoothing: antialiased;
             display: flex; justify-content: center; align-items: center; 
             min-height: 101vh; margin: 0;
-            transition: background-color 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: background-color 0.5s ease;
             overflow-x: hidden;
             overscroll-behavior-y: auto;
         }
@@ -49,7 +43,7 @@
 
         .sync-reveal {
             opacity: 0;
-            transform: translateY(12px) translateZ(0); /* GPU Accelerated */
+            transform: translateY(12px) translateZ(0);
             transition: opacity 0.8s cubic-bezier(0.2, 0, 0.2, 1), transform 0.8s cubic-bezier(0.2, 0, 0.2, 1);
             backface-visibility: hidden;
             will-change: opacity, transform;
@@ -72,7 +66,7 @@
             font-family: 'SF Mono', 'ui-monospace', monospace; 
             font-size: clamp(2.2rem, 8vw, 3.5rem); 
             font-weight: 300; display: block; line-height: 1; 
-            font-variant-numeric: tabular-nums; /* Prevents text "jitter" */
+            font-variant-numeric: tabular-nums;
             transition: all 0.4s ease; 
         }
 
@@ -93,4 +87,48 @@
         }
 
         #cat-perch { 
-            position: fixed;
+            position: fixed; 
+            bottom: var(--safe-bottom); 
+            left: calc(20px + env(safe-area-inset-left, 20px)); 
+            width: 100px; height: 100px; z-index: 15; 
+        }
+
+        @media (min-width: 1024px) { #cat-perch { width: 180px; height: 180px; } }
+
+        .cat-image { width: 100%; height: 100%; background-size: contain; background-repeat: no-repeat; background-position: bottom left; }
+
+        /* Suri Assets */
+        .suri-1 { background-image: url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri1.png'); }
+        .suri-2 { background-image: url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri2.png'); }
+        .suri-3 { background-image: url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri3.png'); }
+        .suri-4 { background-image: url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri4.png'); }
+        .suri-5 { background-image: url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri5.png'); }
+        .suri-6 { background-image: url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri6.png'); }
+        .suri-7 { background-image: url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri7.png'); }
+
+        #description-display, #full-date-display { margin-top: 25px; font-size: 1rem; font-weight: 400; opacity: 0.7; line-height: 1.6; }
+    </style>
+</head>
+<body>
+    <div id="cat-perch" class="sync-reveal"></div> 
+
+    <button id="theme-toggle" class="sync-reveal" aria-label="Toggle Theme">
+        <svg id="sun-icon" style="display:none;" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+        <svg id="moon-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+    </button>
+
+    <main class="timer-container sync-reveal">
+        <h1 id="event-name">loading...</h1>
+        <div id="countdown" style="display: none;">
+            <div class="time-box"><span id="days">00</span><div class="label">days</div></div>
+            <div class="time-box"><span id="hours">00</span><div class="label">hrs</div></div>
+            <div class="time-box"><span id="minutes">00</span><div class="label">min</div></div>
+            <div class="time-box"><span id="seconds">00</span><div class="label">sec</div></div>
+        </div>
+        <div id="description-display" style="display: none;"></div>
+        <div id="full-date-display" style="display: none;"></div>
+    </main>
+
+    <script src="script.js" defer></script>
+</body>
+</html>
