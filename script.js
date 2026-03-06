@@ -1,7 +1,7 @@
 const UI = {
     state: { isRevealed: false, timer: null, last: {} },
     config: { DB: "https://timer-92fdd-default-rtdb.europe-west1.firebasedatabase.app/.json", SURI_TOTAL: 7 },
-    dom: {},
+    dom: {}, 
     
     init() {
         ['event-name', 'full-date-display', 'description-display', 'countdown', 'days', 'hours', 'minutes', 'seconds', 'cat-perch', 'theme-toggle', 'sun-icon', 'moon-icon'].forEach(id => {
@@ -30,7 +30,7 @@ const UI = {
             if (!d) throw 0;
             
             const emoji = d.emojiLibrary?.[d.emoji?.toLowerCase()];
-            const emojiHTML = emoji ? ` <span>${emoji}</span>` : "";
+            const emojiHTML = emoji ? ` <span style="font-style: normal;">${emoji}</span>` : "";
             if (this.dom['event-name']) this.dom['event-name'].innerHTML = `${d.eventName}${emojiHTML}`;
             
             if (Number(d.useTimer) === 1 && d.targetDate) this.runTimer(d.targetDate, d.celebrationMessage);
@@ -41,9 +41,15 @@ const UI = {
     },
     
     runTimer(targetStr, msg) {
-        // Fix: Now explicitly extracts and uses seconds (s=0 defaults if missing)
-        const [D, M, Y, h=0, m=0, s=0] = targetStr.split(/[-/ :]/);
-        const target = new Date(Y, M-1, D, h, m, s).getTime();
+        const parts = targetStr.match(/\d+/g);
+        if (!parts || parts.length < 3) return this.showStatic(msg);
+        
+        let Y, M, D, h, m, s;
+        if (parts[0].length === 4) { Y = parts[0]; M = parts[1]; D = parts[2]; } 
+        else { D = parts[0]; M = parts[1]; Y = parts[2]; if (Y.length === 2) Y = "20" + Y; }
+        
+        h = parts[3] || 0; m = parts[4] || 0; s = parts[5] || 0;
+        const target = new Date(Y, M - 1, D, h, m, s).getTime();
         
         if (this.dom['full-date-display']) {
             this.dom['full-date-display'].innerText = new Date(target).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
