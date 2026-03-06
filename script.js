@@ -38,10 +38,12 @@ async function initTimer() {
     }
 }
 
-// Master reveal for all synced elements
+// Fixed: Targets all synced elements including the cat
 function revealUI() {
     const targets = document.querySelectorAll(".sync-reveal");
-    targets.forEach(el => el.classList.add("reveal"));
+    targets.forEach(el => {
+        el.classList.add("reveal");
+    });
 }
 
 function showFallback() {
@@ -67,7 +69,6 @@ function startCountdown(dateStr, msg) {
     }
 
     let firstRun = true;
-
     const x = setInterval(() => {
         const dist = target - new Date().getTime();
         if (dist <= 0) {
@@ -92,7 +93,6 @@ function startCountdown(dateStr, msg) {
         if(mEl) mEl.innerText = m.toString().padStart(2, '0');
         if(sEl) sEl.innerText = s.toString().padStart(2, '0');
 
-        // Cascading dimming
         if (d === 0) dEl.classList.add("is-due"); else dEl.classList.remove("is-due");
         if (d === 0 && h === 0) hEl.classList.add("is-due"); else hEl.classList.remove("is-due");
         if (d === 0 && h === 0 && m === 0) mEl.classList.add("is-due"); else mEl.classList.remove("is-due");
@@ -114,6 +114,12 @@ function hideTimer(msg) {
     revealUI();
 }
 
+document.getElementById('theme-toggle')?.addEventListener('click', () => {
+    const isLight = document.body.classList.toggle('light-mode');
+    localStorage.setItem('theme', isLight ? 'light' : 'dark');
+    updateThemeIcons(isLight);
+});
+
 function updateThemeIcons(isLight) {
     const sun = document.getElementById('sun-icon');
     const moon = document.getElementById('moon-icon');
@@ -125,12 +131,6 @@ function updateThemeIcons(isLight) {
         if (moon) moon.style.display = 'block';
     }
 }
-
-document.getElementById('theme-toggle')?.addEventListener('click', () => {
-    const isLight = document.body.classList.toggle('light-mode');
-    localStorage.setItem('theme', isLight ? 'light' : 'dark');
-    updateThemeIcons(isLight);
-});
 
 window.onload = () => {
     initTimer();
