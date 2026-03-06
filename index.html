@@ -7,34 +7,59 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Next Adventure</title>
     
-    <link rel="stylesheet" href="style.css">
-    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-</head>
-<body>
-    <div id="cat-perch" class="sync-reveal"></div> 
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400&display=swap" rel="stylesheet">
 
-    <button id="theme-toggle" class="sync-reveal" aria-label="Toggle Theme">
-        <svg id="sun-icon" style="display:none;" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
-        <svg id="moon-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
-    </button>
+    <style>
+        :root {
+            --bg-dark: #121417;
+            --bg-light: #f9fafb;
+            --accent: #ffffff;
+            --safe-bottom: env(safe-area-inset-bottom, 20px);
+        }
 
-    <main class="timer-container sync-reveal">
-        <h1 id="event-name">Loading...</h1>
-        
-        <div id="countdown" style="display: none;">
-            <div class="time-box"><span id="days">00</span><div class="label">Days</div></div>
-            <div class="time-box"><span id="hours">00</span><div class="label">Hrs</div></div>
-            <div class="time-box"><span id="minutes">00</span><div class="label">Min</div></div>
-            <div class="time-box"><span id="seconds">00</span><div class="label">Sec</div></div>
-        </div>
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
-        <div id="description-display" style="display: none;"></div>
-        <div id="full-date-display" style="display: none;"></div>
-        <p id="status-message" style="display: none;"></p>
-    </main>
+        body {
+            background-color: var(--bg-dark);
+            background-image: 
+                url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),
+                radial-gradient(circle at top, #1c1f26, var(--bg-dark));
+            background-blend-mode: overlay;
+            color: var(--accent);
+            font-family: 'Inter', -apple-system, system-ui, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            display: flex; justify-content: center; align-items: center; 
+            min-height: 101vh; /* Enable pull-to-refresh */
+            margin: 0;
+            transition: background-color 0.5s ease;
+            overflow-x: hidden;
+            overscroll-behavior-y: auto;
+        }
 
-    <script src="script.js" defer></script>
-</body>
-</html>
+        body.light-mode {
+            background-color: var(--bg-light);
+            background-image: radial-gradient(circle at top, #ffffff, var(--bg-light));
+            color: #111827;
+        }
+
+        .sync-reveal {
+            opacity: 0;
+            transform: translateY(12px) translateZ(0);
+            transition: opacity 0.8s cubic-bezier(0.2, 0, 0.2, 1), transform 0.8s cubic-bezier(0.2, 0, 0.2, 1);
+            backface-visibility: hidden;
+            will-change: opacity, transform;
+        }
+
+        .sync-reveal.reveal {
+            opacity: 1 !important;
+            transform: translateY(0) translateZ(0);
+        }
+
+        .timer-container {
+            position: relative; text-align: center; width: 90%; max-width: 500px; padding: 20px; z-index: 10;
+        }
+
+        h1 { font-weight: 300; letter-spacing: -0.02em; font-size: 1.8rem; margin-bottom: 30px; }
+        #countdown { display: flex; justify-content: space-around; align-
