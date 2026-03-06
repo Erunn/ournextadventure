@@ -6,9 +6,7 @@ const UI = {
     },
     
     init() {
-        // Safety: If things take too long, reveal anyway after 3 seconds
-        setTimeout(() => this.reveal(), 3000);
-        
+        setTimeout(() => this.reveal(), 3000); // Safety reveal
         this.preloadImages();
         this.renderSuri();
         this.initTheme();
@@ -26,14 +24,12 @@ const UI = {
         try {
             const r = await fetch(`${this.config.DB}?v=${Date.now()}`);
             const d = await r.json();
-            if (!d) throw new Error("No data");
+            if (!d) throw new Error();
 
             document.title = d.shareTitle || "Next Adventure";
             const emoji = d.emojiLibrary?.[d.emoji?.toLowerCase()] || "❤️";
             const eventNameEl = document.getElementById("event-name");
-            if (eventNameEl) {
-                eventNameEl.innerHTML = `${d.eventName} <span>${emoji}</span>`;
-            }
+            if (eventNameEl) eventNameEl.innerHTML = `${d.eventName} <span>${emoji}</span>`;
 
             if (Number(d.useTimer) === 1 && d.targetDate) {
                 this.runTimer(d.targetDate, d.celebrationMessage);
@@ -41,7 +37,6 @@ const UI = {
                 this.showStatic(d.noTimerMessage);
             }
         } catch (e) {
-            console.error("Load failed:", e);
             this.showStatic("Next Adventure ❤️");
         }
     },
@@ -75,11 +70,19 @@ const UI = {
                 seconds: Math.floor((dist % 60000) / 1000)
             };
 
-            for (const [unit, val] of Object.entries(t)) {
-                if (els[unit]) {
-                    els[unit].innerText = val.toString().padStart(2, '0');
+            // Restored dimming logic
+            const units = ['days', 'hours', 'minutes', 'seconds'];
+            units.forEach(u => {
+                if (els[u]) {
+                    els[u].innerText = t[u].toString().padStart(2, '0');
+                    if (u !== 'seconds') {
+                        const isExpired = (u === 'days' && t.days === 0) || 
+                                         (u === 'hours' && t.days === 0 && t.hours === 0) || 
+                                         (u === 'minutes' && t.days === 0 && t.hours === 0 && t.minutes === 0);
+                        els[u].classList.toggle('is-due', isExpired);
+                    }
                 }
-            }
+            });
 
             if (els.countContainer) els.countContainer.style.display = "flex";
             this.reveal();
@@ -103,9 +106,9 @@ const UI = {
 
     reveal() {
         if (this.state.isRevealed) return;
-        const elements = document.querySelectorAll(".sync-reveal");
-        if (elements.length > 0) {
-            elements.forEach(el => el.classList.add("reveal"));
+        const els = document.querySelectorAll(".sync-reveal");
+        if (els.length > 0) {
+            els.forEach(el => el.classList.add("reveal"));
             this.state.isRevealed = true;
         }
     },
@@ -116,7 +119,7 @@ const UI = {
         sessionStorage.setItem('ls', c);
         const perch = document.getElementById('cat-perch');
         if (perch) {
-            perch.innerHTML = ''; // Clear old Suri
+            perch.innerHTML = '';
             const img = document.createElement('div');
             img.className = `cat-image suri-${c}`;
             perch.appendChild(img);
@@ -127,7 +130,6 @@ const UI = {
         const btn = document.getElementById('theme-toggle');
         const isL = localStorage.getItem('th') === 'l';
         if (isL) document.body.classList.add('light-mode');
-        
         if (btn) {
             btn.onclick = () => {
                 const l = document.body.classList.toggle('light-mode');
@@ -137,5 +139,4 @@ const UI = {
     }
 };
 
-// Initialize once DOM is ready
 document.addEventListener('DOMContentLoaded', () => UI.init());
