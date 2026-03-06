@@ -38,12 +38,9 @@ async function initTimer() {
     }
 }
 
-// Fixed: Targets all synced elements including the cat
 function revealUI() {
     const targets = document.querySelectorAll(".sync-reveal");
-    targets.forEach(el => {
-        el.classList.add("reveal");
-    });
+    targets.forEach(el => el.classList.add("reveal"));
 }
 
 function showFallback() {
@@ -114,12 +111,6 @@ function hideTimer(msg) {
     revealUI();
 }
 
-document.getElementById('theme-toggle')?.addEventListener('click', () => {
-    const isLight = document.body.classList.toggle('light-mode');
-    localStorage.setItem('theme', isLight ? 'light' : 'dark');
-    updateThemeIcons(isLight);
-});
-
 function updateThemeIcons(isLight) {
     const sun = document.getElementById('sun-icon');
     const moon = document.getElementById('moon-icon');
@@ -132,10 +123,25 @@ function updateThemeIcons(isLight) {
     }
 }
 
+document.getElementById('theme-toggle')?.addEventListener('click', () => {
+    const isLight = document.body.classList.toggle('light-mode');
+    localStorage.setItem('theme', isLight ? 'light' : 'dark');
+    updateThemeIcons(isLight);
+});
+
+// UPDATED: Logic to prevent repeat cats on refresh
 window.onload = () => {
     initTimer();
-    const roll = Math.random();
-    const suriIndex = Math.floor(roll * 7) + 1;
+    
+    const lastCat = sessionStorage.getItem('lastSuriIndex');
+    let suriIndex;
+    
+    // Keep picking a new number until it's different from the last one
+    do {
+        suriIndex = Math.floor(Math.random() * 7) + 1;
+    } while (suriIndex.toString() === lastCat);
+
+    sessionStorage.setItem('lastSuriIndex', suriIndex);
     showSuri(`suri-${suriIndex}`);
 
     const savedTheme = localStorage.getItem('theme');
