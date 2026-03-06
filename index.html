@@ -5,44 +5,51 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="manifest" href="manifest.json?v=final">
+    <link rel="manifest" href="manifest.json?v=absolute-final">
     <link rel="dns-prefetch" href="https://timer-92fdd-default-rtdb.europe-west1.firebasedatabase.app">
     <link rel="preconnect" href="https://raw.githubusercontent.com">
     <title>next adventure</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text x=%2250%22 y=%2250%22 dominant-baseline=%22central%22 text-anchor=%22middle%22 font-size=%2280%22>🕒</text></svg>">
-    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 fill=%22%23121417%22/><text x=%2250%22 y=%2250%22 dominant-baseline=%22central%22 text-anchor=%22middle%22 font-size=%2265%22>🕒</text></svg>">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 fill=%22%230f1115%22/><text x=%2250%22 y=%2250%22 dominant-baseline=%22central%22 text-anchor=%22middle%22 font-size=%2265%22>🕒</text></svg>">
     <style>
-        :root{--bg-dark:#121417;--bg-light:#f9fafb;--accent:#ffffff;--safe-bottom:env(safe-area-inset-bottom,20px)}
-        
-        /* Optimization 1: Prevent text highlighting/selection like a native app */
+        /* The Final Calming Palette */
+        :root{--bg-dark:#0f1115;--bg-light:#f4f5f7;--accent:rgba(255,255,255,0.85);--safe-bottom:env(safe-area-inset-bottom,20px)}
         *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none}
         
         html{height:101%;background-color:var(--bg-dark);scrollbar-width:none}
-        body{margin:0;width:100%;min-height:101vh;background-color:var(--bg-dark);background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),radial-gradient(circle at top,#1c1f26,var(--bg-dark));background-blend-mode:overlay;color:var(--accent);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased;display:flex;justify-content:center;align-items:center;transition:background-color .4s ease;-ms-overflow-style:none}
+        body{margin:0;width:100%;min-height:101vh;background-color:var(--bg-dark);background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),radial-gradient(circle at top,#161921,var(--bg-dark));background-blend-mode:overlay;color:var(--accent);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased;display:flex;justify-content:center;align-items:center;transition:background-color .5s ease;-ms-overflow-style:none}
         html::-webkit-scrollbar,body::-webkit-scrollbar{display:none!important;width:0!important;height:0!important}
-        body.light-mode{background-color:var(--bg-light);background-image:radial-gradient(circle at top,#ffffff,var(--bg-light));color:#111827}
-        .sync-reveal{opacity:0;transform:translate3d(0, 12px, 0);transition:all .8s cubic-bezier(.2,0,.2,1);backface-visibility:hidden;will-change:opacity,transform}
+        
+        /* Softer slate text for light mode */
+        body.light-mode{background-color:var(--bg-light);background-image:radial-gradient(circle at top,#ffffff,var(--bg-light));color:#374151}
+        
+        .sync-reveal{opacity:0;transform:translate3d(0, 10px, 0);transition:all .9s cubic-bezier(.25,.1,.25,1);backface-visibility:hidden;will-change:opacity,transform}
         .sync-reveal.reveal{opacity:1!important;transform:translate3d(0, 0, 0)}
         .timer-container{position:relative;text-align:center;width:90%;max-width:500px;padding:20px;z-index:10}
         
-        /* Allow text selection ONLY on the event title and descriptions if users want to copy it */
         h1, #description-display, #full-date-display {-webkit-user-select:text;user-select:text}
         
-        h1{font-weight:600;letter-spacing:-.02em;font-size:clamp(1.8rem,6vw,2.2rem);margin-bottom:30px;text-transform:lowercase;min-height:1.2em}
-        #description-display,#full-date-display{margin-bottom:30px;font-size:1rem;font-weight:400;opacity:.7;line-height:1.6}
-        #countdown{display:flex;justify-content:space-between;align-items:center;margin:0 auto 40px auto;max-width:400px;transition:opacity 0.4s ease}
+        /* Typography: Tighter tracking, softer weight */
+        h1{font-weight:500;letter-spacing:-.04em;font-size:clamp(1.8rem,6vw,2.2rem);margin-bottom:30px;text-transform:lowercase;min-height:1.2em}
+        #description-display,#full-date-display{margin-bottom:30px;font-size:1rem;font-weight:400;opacity:.65;line-height:1.6;letter-spacing:0.01em}
         
-        /* Optimization 2: Fixed widths prevent the timer from jittering horizontally */
-        .time-box {flex: 1; display: flex; flex-direction: column; align-items: center;}
+        #countdown{display:flex;justify-content:space-between;align-items:center;margin:0 auto 40px auto;max-width:400px;transition:opacity 0.5s ease}
+        .time-box {flex: 1; display: flex; flex-direction: column; align-items: center; contain: strict; height: 80px;}
         
-        .time-box span{font-family:'SF Mono','ui-monospace',monospace;font-size:clamp(2.2rem,8vw,3.5rem);font-weight:300;display:block;line-height:1;font-variant-numeric:tabular-nums;transition:all .4s ease;contain:content}
-        .time-box span.is-due{opacity:.12;filter:blur(.5px);transform:scale(.92)}
-        .label{font-size:.65rem;text-transform:uppercase;letter-spacing:.12em;margin-top:10px;color:rgba(255,255,255,.4);font-weight:500}
-        body.light-mode .label{color:rgba(0,0,0,.5)}
-        #theme-toggle{position:fixed;bottom:calc(20px + var(--safe-bottom));right:calc(30px + env(safe-area-inset-right,20px));border:none;background:none;cursor:pointer;padding:12px;color:inherit;opacity:.4;transition:opacity .3s ease;z-index:100}
+        /* Typography: Ultra-light numbers */
+        .time-box span{font-family:'SF Mono','ui-monospace',monospace;font-size:clamp(2.2rem,8vw,3.5rem);font-weight:200;display:block;line-height:1;font-variant-numeric:tabular-nums;transition:all .5s ease}
+        .time-box span.is-due{opacity:.1;filter:blur(.5px);transform:scale(.95)}
+        
+        .label{font-size:.65rem;text-transform:uppercase;letter-spacing:.15em;margin-top:12px;color:rgba(255,255,255,.35);font-weight:500}
+        body.light-mode .label{color:rgba(0,0,0,.4)}
+        
+        #theme-toggle{position:fixed;bottom:calc(20px + var(--safe-bottom));right:calc(30px + env(safe-area-inset-right,20px));border:none;background:none;cursor:pointer;padding:12px;color:inherit;opacity:.3;transition:opacity .4s ease;z-index:100}
+        #theme-toggle:hover{opacity:.6}
+        
         #cat-perch{position:fixed;bottom:var(--safe-bottom);left:calc(20px + env(safe-area-inset-left,20px));width:100px;height:100px;z-index:999;cursor:pointer}
         @media (min-width:1024px){#cat-perch{width:180px;height:180px}}
-        .cat-image{width:100%;height:100%;background-size:contain;background-repeat:no-repeat;background-position:bottom left;contain:content;pointer-events:none}
+        .cat-image{width:100%;height:100%;background-size:contain;background-repeat:no-repeat;background-position:bottom left;contain:strict;pointer-events:none}
+        
         .suri-1{background-image:url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri1.png')}
         .suri-2{background-image:url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri2.png')}
         .suri-3{background-image:url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri3.png')}
@@ -55,8 +62,8 @@
 <body>
     <div id="cat-perch" class="sync-reveal"></div> 
     <button id="theme-toggle" class="sync-reveal" aria-label="Toggle Theme">
-        <svg id="sun-icon" style="display:none;" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
-        <svg id="moon-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+        <svg id="sun-icon" style="display:none;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+        <svg id="moon-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
     </button>
     <main class="timer-container sync-reveal">
         <h1 id="event-name"></h1>
@@ -71,13 +78,6 @@
         </div>
     </main>
     <script src="script.js" defer></script>
-    
-    <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js').catch(() => {});
-            });
-        }
-    </script>
+    <script>if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));</script>
 </body>
 </html>
