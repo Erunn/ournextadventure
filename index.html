@@ -6,7 +6,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="manifest" href="manifest.json">
-    <title>Next Adventure</title>
+    <title>next adventure</title>
     
     <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri3.png">
     <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri3.png">
@@ -14,164 +14,44 @@
     <link rel="preconnect" href="https://raw.githubusercontent.com">
 
     <style>
-        :root {
-            --bg-dark: #121417;
-            --bg-light: #f9fafb;
-            --accent: #ffffff;
-            --safe-bottom: env(safe-area-inset-bottom, 20px);
-        }
+        :root { --bg-dark: #121417; --bg-light: #f9fafb; --accent: #ffffff; --safe-bottom: env(safe-area-inset-bottom, 20px); }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
-        * { 
-            box-sizing: border-box; 
-            -webkit-tap-highlight-color: transparent; 
-        }
-
-        /* Ghost Scroll: Hidden visuals, active reload engine */
-        html {
-            height: 101%;
-            background-color: var(--bg-dark);
-            scrollbar-width: none; /* Hide for Firefox */
-        }
-
+        /* Performance: Hide visuals while keeping refresh engine active */
+        html { height: 101%; background-color: var(--bg-dark); scrollbar-width: none; }
         body {
-            margin: 0;
-            width: 100%;
-            min-height: 101vh; 
-            background-color: var(--bg-dark);
-            background-image: 
-                url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),
-                radial-gradient(circle at top, #1c1f26, var(--bg-dark));
-            background-blend-mode: overlay;
-            color: var(--accent);
-            /* System font stack */
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            -webkit-font-smoothing: antialiased;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            -ms-overflow-style: none; /* Hide for Edge/IE */
+            margin: 0; width: 100%; min-height: 101vh; background-color: var(--bg-dark);
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"), radial-gradient(circle at top, #1c1f26, var(--bg-dark));
+            background-blend-mode: overlay; color: var(--accent); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            -webkit-font-smoothing: antialiased; display: flex; justify-content: center; align-items: center; transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1); -ms-overflow-style: none;
         }
+        html::-webkit-scrollbar, body::-webkit-scrollbar { display: none !important; width: 0 !important; height: 0 !important; }
+        body.light-mode { background-color: var(--bg-light); background-image: radial-gradient(circle at top, #ffffff, var(--bg-light)); color: #111827; }
 
-        /* Hide Scrollbar for Chrome, Safari, and Opera */
-        html::-webkit-scrollbar, 
-        body::-webkit-scrollbar {
-            display: none !important;
-            width: 0 !important;
-            height: 0 !important;
-        }
+        .sync-reveal { opacity: 0; transform: translateY(12px) translateZ(0); transition: opacity 0.8s cubic-bezier(0.2, 0, 0.2, 1), transform 0.8s cubic-bezier(0.2, 0, 0.2, 1); backface-visibility: hidden; will-change: opacity, transform; }
+        .sync-reveal.reveal { opacity: 1 !important; transform: translateY(0) translateZ(0); }
 
-        body.light-mode {
-            background-color: var(--bg-light);
-            background-image: radial-gradient(circle at top, #ffffff, var(--bg-light));
-            color: #111827;
-        }
+        .timer-container { position: relative; text-align: center; width: 90%; max-width: 500px; padding: 20px; z-index: 10; }
+        h1 { font-weight: 600; letter-spacing: -0.02em; font-size: clamp(1.8rem, 6vw, 2.2rem); margin-bottom: 30px; text-transform: lowercase; }
+        #countdown { display: flex; justify-content: space-around; align-items: center; margin: 40px auto; gap: 8px; }
 
-        .sync-reveal {
-            opacity: 0;
-            transform: translateY(12px) translateZ(0);
-            transition: opacity 0.8s cubic-bezier(0.2, 0, 0.2, 1), transform 0.8s cubic-bezier(0.2, 0, 0.2, 1);
-            backface-visibility: hidden;
-            will-change: opacity, transform;
-        }
-
-        .sync-reveal.reveal {
-            opacity: 1 !important;
-            transform: translateY(0) translateZ(0);
-        }
-
-        .timer-container {
-            position: relative; 
-            text-align: center; 
-            width: 90%; 
-            max-width: 500px; 
-            padding: 20px; 
-            z-index: 10;
-        }
-
-        h1 { 
-            font-weight: 600; 
-            letter-spacing: -0.02em; 
-            font-size: clamp(1.8rem, 6vw, 2.2rem); 
-            margin-bottom: 30px; 
-            text-transform: lowercase; 
-        }
-        
-        #countdown { 
-            display: flex; 
-            justify-content: space-around; 
-            align-items: center; 
-            margin: 40px auto; 
-            gap: 8px; 
-        }
-
-        .time-box span { 
-            font-family: 'SF Mono', 'ui-monospace', monospace; 
-            font-size: clamp(2.2rem, 8vw, 3.5rem); 
-            font-weight: 300; 
-            display: block; 
-            line-height: 1; 
-            font-variant-numeric: tabular-nums; 
-            transition: all 0.4s ease;
-            contain: content;
-        }
-
-        /* Expired unit dimming */
-        .time-box span.is-due { 
-            opacity: 0.12; 
-            filter: blur(0.5px); 
-            transform: scale(0.92); 
-        }
-
-        .label { 
-            font-size: 0.65rem; 
-            text-transform: uppercase; 
-            letter-spacing: 0.12em; 
-            margin-top: 10px; 
-            color: rgba(255, 255, 255, 0.4); 
-            font-weight: 500; 
-        }
-        
+        .time-box span { font-family: 'SF Mono', 'ui-monospace', monospace; font-size: clamp(2.2rem, 8vw, 3.5rem); font-weight: 300; display: block; line-height: 1; font-variant-numeric: tabular-nums; transition: all 0.4s ease; contain: content; }
+        .time-box span.is-due { opacity: 0.12; filter: blur(0.5px); transform: scale(0.92); }
+        .label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.12em; margin-top: 10px; color: rgba(255, 255, 255, 0.4); font-weight: 500; }
         body.light-mode .label { color: rgba(0, 0, 0, 0.5); }
 
-        #theme-toggle {
-            position: fixed; 
-            bottom: calc(20px + var(--safe-bottom)); 
-            right: calc(30px + env(safe-area-inset-right, 20px)); 
-            border: none; 
-            background: none; 
-            cursor: pointer; 
-            padding: 12px; 
-            color: inherit; 
-            opacity: 0.4; 
-            transition: all 0.3s ease; 
-            z-index: 100;
-        }
-
-        #cat-perch { 
-            position: fixed; 
-            bottom: var(--safe-bottom); 
-            left: calc(20px + env(safe-area-inset-left, 20px)); 
-            width: 100px; 
-            height: 100px; 
-            z-index: 15; 
-        }
-
-        @media (min-width: 1024px) { 
-            #cat-perch { width: 180px; height: 180px; } 
-        }
+        #theme-toggle { position: fixed; bottom: calc(20px + var(--safe-bottom)); right: calc(30px + env(safe-area-inset-right, 20px)); border: none; background: none; cursor: pointer; padding: 12px; color: inherit; opacity: 0.4; transition: all 0.3s ease; z-index: 100; }
+        #cat-perch { position: fixed; bottom: var(--safe-bottom); left: calc(20px + env(safe-area-inset-left, 20px)); width: 100px; height: 100px; z-index: 15; }
+        @media (min-width: 1024px) { #cat-perch { width: 180px; height: 180px; } }
 
         .cat-image { 
-            width: 100%; 
-            height: 100%; 
-            background-size: contain; 
-            background-repeat: no-repeat; 
-            background-position: bottom left; 
-            transform: translateZ(0);
-            contain: content;
+            width: 100%; height: 100%; background-size: contain; background-repeat: no-repeat; background-position: bottom left; 
+            transform: translateZ(0); contain: content; 
+            /* Fix: Ensure image centers without stretching */
+            object-fit: contain; 
         }
 
-        /* Suri Sprites */
+        /* Asset Mapping */
         .suri-1 { background-image: url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri1.png'); }
         .suri-2 { background-image: url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri2.png'); }
         .suri-3 { background-image: url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri3.png'); }
@@ -180,13 +60,7 @@
         .suri-6 { background-image: url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri6.png'); }
         .suri-7 { background-image: url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri7.png'); }
 
-        #description-display, #full-date-display { 
-            margin-top: 25px; 
-            font-size: 1rem; 
-            font-weight: 400; 
-            opacity: 0.7; 
-            line-height: 1.6; 
-        }
+        #description-display, #full-date-display { margin-top: 25px; font-size: 1rem; font-weight: 400; opacity: 0.7; line-height: 1.6; }
     </style>
 </head>
 <body>
