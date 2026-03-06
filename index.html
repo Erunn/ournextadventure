@@ -3,9 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Next Adventure</title>
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
     <script>
         var v = new Date().getTime();
         document.write('<link rel="stylesheet" href="style.css?v=' + v + '">');
@@ -21,12 +25,14 @@
 
     <div class="timer-container sync-reveal">
         <h1 id="event-name">Loading...</h1>
+        
         <div id="countdown" style="display: none;">
             <div class="time-box"><span id="days">00</span><div class="label">Days</div></div>
             <div class="time-box"><span id="hours">00</span><div class="label">Hrs</div></div>
             <div class="time-box"><span id="minutes">00</span><div class="label">Min</div></div>
             <div class="time-box"><span id="seconds">00</span><div class="label">Sec</div></div>
         </div>
+
         <div id="description-display" style="display: none;"></div>
         <div id="full-date-display" style="display: none;"></div>
         <p id="status-message" style="display: none;"></p>
