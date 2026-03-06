@@ -6,7 +6,6 @@ const UI = {
     },
     
     init() {
-        // Safety Reveal
         setTimeout(() => this.reveal(), 3000);
         this.preloadImages();
         this.renderSuri();
@@ -120,10 +119,19 @@ const UI = {
     initTheme() {
         const isL = localStorage.getItem('th') === 'l';
         if (isL) document.body.classList.add('light-mode');
+        this.updIcons(isL);
         document.getElementById('theme-toggle').onclick = () => {
             const l = document.body.classList.toggle('light-mode');
             localStorage.setItem('th', l ? 'l' : 'd');
+            this.updIcons(l);
         };
+    },
+
+    updIcons(l) {
+        const sun = document.getElementById('sun-icon');
+        const moon = document.getElementById('moon-icon');
+        if (sun) sun.style.display = l ? 'block' : 'none';
+        if (moon) moon.style.display = l ? 'none' : 'block';
     }
 };
 
