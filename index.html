@@ -21,6 +21,13 @@
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
+        html, body {
+            height: 100%;
+            /* Fix: hidden prevents accidental scrolling, but contain allows the 'pull' */
+            overflow: hidden; 
+            margin: 0;
+        }
+
         body {
             background-color: var(--bg-dark);
             background-image: 
@@ -31,12 +38,10 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             -webkit-font-smoothing: antialiased;
             display: flex; justify-content: center; align-items: center; 
-            /* Fix: 101vh enables pull-to-refresh on mobile */
-            min-height: 101vh; 
-            margin: 0;
+            /* 100.1% creates the tiny invisible overlap needed for mobile refresh */
+            min-height: 100.1%; 
             transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            overflow-x: hidden;
-            overscroll-behavior-y: auto;
+            overscroll-behavior-y: contain;
         }
 
         body.light-mode {
@@ -138,6 +143,6 @@
         <div id="full-date-display" style="display: none;"></div>
     </main>
 
-    <script src="script.js?v=refresh-fix" defer></script>
+    <script src="script.js?v=final-touch" defer></script>
 </body>
 </html>
