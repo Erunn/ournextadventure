@@ -27,11 +27,15 @@
         .label{font-size:.65rem;text-transform:uppercase;letter-spacing:.12em;margin-top:10px;color:rgba(255,255,255,.4);font-weight:500}
         body.light-mode .label{color:rgba(0,0,0,.5)}
         #theme-toggle{position:fixed;bottom:calc(20px + var(--safe-bottom));right:calc(30px + env(safe-area-inset-right,20px));border:none;background:none;cursor:pointer;padding:12px;color:inherit;opacity:.4;transition:all .3s ease;z-index:100}
-        #cat-perch{position:fixed;bottom:var(--safe-bottom);left:calc(20px + env(safe-area-inset-left,20px));width:100px;height:100px;z-index:50;cursor:pointer;transition:transform .2s ease}
-        #cat-perch:hover{transform:scale(1.05)}
-        #cat-perch:active{transform:scale(.95)}
-        @media (min-width:1024px){#cat-perch{width:180px;height:180px}}
+        
+        /* Fixed: No bounce, high z-index for laptop interaction */
+        #cat-perch { 
+            position: fixed; bottom: var(--safe-bottom); left: calc(20px + env(safe-area-inset-left, 20px)); 
+            width: 100px; height: 100px; z-index: 999; cursor: pointer;
+        }
+        @media (min-width: 1024px) { #cat-perch { width: 180px; height: 180px; } }
         .cat-image{width:100%;height:100%;background-size:contain;background-repeat:no-repeat;background-position:bottom left;transform:translateZ(0);contain:content;pointer-events:none}
+        
         .suri-1{background-image:url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri1.png')}
         .suri-2{background-image:url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri2.png')}
         .suri-3{background-image:url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri3.png')}
@@ -44,7 +48,7 @@
 </head>
 <body>
     <div id="cat-perch" class="sync-reveal"></div> 
-    <button id="theme-toggle" class="sync-reveal" aria-label="Toggle Theme">
+    <button id="theme-toggle" class="sync-reveal">
         <svg id="sun-icon" style="display:none;" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
         <svg id="moon-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
     </button>
