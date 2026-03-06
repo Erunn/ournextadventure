@@ -8,8 +8,8 @@
   "description": "Counting down to our next trip.",
   "icons": [
     {
-      "src": "https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri1.png",
-      "sizes": "192x192",
+      "src": "https://raw.githubusercontent.com/Erunn/ournextadventure/main/icon.png",
+      "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
     }
