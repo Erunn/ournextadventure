@@ -13,7 +13,6 @@ const UI = {
 
     async load() {
         try {
-            // Versioning query to bypass aggressive caching
             const r = await fetch(`${this.config.DB}?v=${Date.now()}`);
             const d = await r.json();
             if (!d) throw 0;
@@ -42,6 +41,15 @@ const UI = {
             fd.style.display = "block";
         }
 
+        // Cache elements to avoid repeated searching
+        const els = {
+            days: document.getElementById('days'),
+            hours: document.getElementById('hours'),
+            minutes: document.getElementById('minutes'),
+            seconds: document.getElementById('seconds'),
+            countContainer: document.getElementById("countdown")
+        };
+
         const tick = () => {
             const dist = target - Date.now();
             if (dist <= 0) return this.showStatic(msg);
@@ -53,22 +61,17 @@ const UI = {
                 seconds: Math.floor((dist % 60000) / 1000)
             };
 
-            // Efficiently loop through time units
-            const units = ['days', 'hours', 'minutes', 'seconds'];
-            for (let i = 0; i < units.length; i++) {
-                const u = units[i];
-                const el = document.getElementById(u);
-                el.innerText = t[u].toString().padStart(2, '0');
-                
-                if (u !== 'seconds') {
-                    const isPast = (u === 'days' && t.days === 0) || 
-                                   (u === 'hours' && t.days === 0 && t.hours === 0) || 
-                                   (u === 'minutes' && t.days === 0 && t.hours === 0 && t.minutes === 0);
-                    el.classList.toggle('is-due', isPast);
+            for (const [unit, val] of Object.entries(t)) {
+                els[unit].innerText = val.toString().padStart(2, '0');
+                if (unit !== 'seconds') {
+                    const isPast = (unit === 'days' && t.days === 0) || 
+                                   (unit === 'hours' && t.days === 0 && t.hours === 0) || 
+                                   (unit === 'minutes' && t.days === 0 && t.hours === 0 && t.minutes === 0);
+                    els[unit].classList.toggle('is-due', isPast);
                 }
             }
 
-            document.getElementById("countdown").style.display = "flex";
+            els.countContainer.style.display = "flex";
             this.reveal();
         };
 
@@ -105,10 +108,11 @@ const UI = {
     },
 
     initTheme() {
+        const btn = document.getElementById('theme-toggle');
         const isL = localStorage.getItem('th') === 'l';
         if (isL) document.body.classList.add('light-mode');
         this.updIcons(isL);
-        document.getElementById('theme-toggle').onclick = () => {
+        btn.onclick = () => {
             const l = document.body.classList.toggle('light-mode');
             localStorage.setItem('th', l ? 'l' : 'd');
             this.updIcons(l);
