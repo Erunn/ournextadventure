@@ -10,7 +10,6 @@ const UI = {
         this.load();
         const perch = document.getElementById('cat-perch');
         if (perch) {
-            // pointerdown is the most reliable for laptop + mobile
             perch.addEventListener('pointerdown', (e) => {
                 e.stopPropagation();
                 this.renderSuri();
@@ -76,7 +75,9 @@ const UI = {
     showStatic(msg) {
         if (this.state.timer) clearInterval(this.state.timer);
         const count = document.getElementById("countdown");
+        const fullDate = document.getElementById("full-date-display"); // Fix: Targeted date container
         if (count) count.style.display = "none";
+        if (fullDate) fullDate.style.display = "none"; // Fix: Hide date when expired
         const desc = document.getElementById("description-display");
         if (desc) { desc.style.display = "block"; desc.innerText = msg; }
         this.reveal();
