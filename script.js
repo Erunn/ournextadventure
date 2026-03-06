@@ -21,13 +21,17 @@ const UI = {
             const r = await fetch(`${this.config.DB}?v=${Date.now()}`);
             const d = await r.json();
             if (!d) throw 0;
-            const emoji = d.emojiLibrary?.[d.emoji?.toLowerCase()] || "❤️";
-            document.getElementById("event-name").innerHTML = `${d.eventName} <span>${emoji}</span>`;
+            
+            // Strictly check for an emoji. If none exists, leave it blank.
+            const emoji = d.emojiLibrary?.[d.emoji?.toLowerCase()];
+            const emojiHTML = emoji ? ` <span>${emoji}</span>` : "";
+            document.getElementById("event-name").innerHTML = `${d.eventName}${emojiHTML}`;
             
             if (Number(d.useTimer) === 1 && d.targetDate) this.runTimer(d.targetDate, d.celebrationMessage);
             else this.showStatic(d.noTimerMessage);
         } catch (e) {
-            this.showStatic("next adventure ❤️");
+            // Also removed the fallback from the error state
+            this.showStatic("next adventure");
         }
     },
     
@@ -73,10 +77,24 @@ const UI = {
     
     showStatic(msg) {
         if (this.state.timer) clearInterval(this.state.timer);
-        const count = document.getElementById("countdown"), fd = document.getElementById("full-date-display"), desc = document.getElementById("description-display");
-        if (count) count.style.display = "none";
+        const count = document.getElementById("countdown");
+        const fd = document.getElementById("full-date-display");
+        const desc = document.getElementById("description-display");
+        
+        if (count) {
+            if (count.style.display === "flex") {
+                count.style.visibility = "hidden";
+                count.style.opacity = "0";
+            } else {
+                count.style.display = "none";
+            }
+        }
+        
         if (fd) fd.style.display = "none";
-        if (desc) { desc.style.display = "block"; desc.innerText = msg; }
+        if (desc) { 
+            desc.style.display = "block"; 
+            desc.innerText = msg; 
+        }
         this.reveal();
     },
     
