@@ -7,10 +7,8 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="manifest" href="manifest.json?v=3">
     <title>next adventure</title>
-    
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text x=%2250%22 y=%2250%22 dominant-baseline=%22central%22 text-anchor=%22middle%22 font-size=%2280%22>🕒</text></svg>">
     <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 fill=%22%23121417%22/><text x=%2250%22 y=%2250%22 dominant-baseline=%22central%22 text-anchor=%22middle%22 font-size=%2265%22>🕒</text></svg>">
-    
     <link rel="preconnect" href="https://raw.githubusercontent.com">
     <style>
         :root{--bg-dark:#121417;--bg-light:#f9fafb;--accent:#ffffff;--safe-bottom:env(safe-area-inset-bottom,20px)}
@@ -22,8 +20,8 @@
         .sync-reveal{opacity:0;transform:translateY(12px) translateZ(0);transition:all .8s cubic-bezier(.2,0,.2,1);backface-visibility:hidden;will-change:opacity,transform}
         .sync-reveal.reveal{opacity:1!important;transform:translateY(0) translateZ(0)}
         .timer-container{position:relative;text-align:center;width:90%;max-width:500px;padding:20px;z-index:10}
-        h1{font-weight:600;letter-spacing:-.02em;font-size:clamp(1.8rem,6vw,2.2rem);margin-bottom:30px;text-transform:lowercase}
-        #countdown{display:flex;justify-content:space-around;align-items:center;margin:40px auto;gap:8px}
+        h1{font-weight:600;letter-spacing:-.02em;font-size:clamp(1.8rem,6vw,2.2rem);margin-bottom:30px;text-transform:lowercase;min-height:1.2em}
+        #countdown{display:flex;justify-content:space-around;align-items:center;margin:40px auto;gap:8px;transition:opacity 0.4s ease}
         .time-box span{font-family:'SF Mono','ui-monospace',monospace;font-size:clamp(2.2rem,8vw,3.5rem);font-weight:300;display:block;line-height:1;font-variant-numeric:tabular-nums;transition:all .4s ease;contain:content}
         .time-box span.is-due{opacity:.12;filter:blur(.5px);transform:scale(.92)}
         .label{font-size:.65rem;text-transform:uppercase;letter-spacing:.12em;margin-top:10px;color:rgba(255,255,255,.4);font-weight:500}
@@ -49,7 +47,7 @@
         <svg id="moon-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
     </button>
     <main class="timer-container sync-reveal">
-        <h1 id="event-name">loading...</h1>
+        <h1 id="event-name"></h1>
         <div id="countdown" style="display:none;">
             <div class="time-box"><span id="days">00</span><div class="label">days</div></div>
             <div class="time-box"><span id="hours">00</span><div class="label">hrs</div></div>
