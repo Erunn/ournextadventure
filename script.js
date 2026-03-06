@@ -6,6 +6,9 @@ const UI = {
     },
     
     init() {
+        // Safety: If things take too long, reveal anyway after 3 seconds
+        setTimeout(() => this.reveal(), 3000);
+        
         this.preloadImages();
         this.renderSuri();
         this.initTheme();
@@ -23,11 +26,14 @@ const UI = {
         try {
             const r = await fetch(`${this.config.DB}?v=${Date.now()}`);
             const d = await r.json();
-            if (!d) throw 0;
+            if (!d) throw new Error("No data");
 
             document.title = d.shareTitle || "Next Adventure";
             const emoji = d.emojiLibrary?.[d.emoji?.toLowerCase()] || "❤️";
-            document.getElementById("event-name").innerHTML = `${d.eventName} <span>${emoji}</span>`;
+            const eventNameEl = document.getElementById("event-name");
+            if (eventNameEl) {
+                eventNameEl.innerHTML = `${d.eventName} <span>${emoji}</span>`;
+            }
 
             if (Number(d.useTimer) === 1 && d.targetDate) {
                 this.runTimer(d.targetDate, d.celebrationMessage);
@@ -35,6 +41,7 @@ const UI = {
                 this.showStatic(d.noTimerMessage);
             }
         } catch (e) {
+            console.error("Load failed:", e);
             this.showStatic("Next Adventure ❤️");
         }
     },
@@ -71,12 +78,6 @@ const UI = {
             for (const [unit, val] of Object.entries(t)) {
                 if (els[unit]) {
                     els[unit].innerText = val.toString().padStart(2, '0');
-                    if (unit !== 'seconds') {
-                        const isPast = (unit === 'days' && t.days === 0) || 
-                                       (unit === 'hours' && t.days === 0 && t.hours === 0) || 
-                                       (unit === 'minutes' && t.days === 0 && t.hours === 0 && t.minutes === 0);
-                        els[unit].classList.toggle('is-due', isPast);
-                    }
                 }
             }
 
@@ -102,8 +103,11 @@ const UI = {
 
     reveal() {
         if (this.state.isRevealed) return;
-        document.querySelectorAll(".sync-reveal").forEach(el => el.classList.add("reveal"));
-        this.state.isRevealed = true;
+        const elements = document.querySelectorAll(".sync-reveal");
+        if (elements.length > 0) {
+            elements.forEach(el => el.classList.add("reveal"));
+            this.state.isRevealed = true;
+        }
     },
 
     renderSuri() {
@@ -112,6 +116,7 @@ const UI = {
         sessionStorage.setItem('ls', c);
         const perch = document.getElementById('cat-perch');
         if (perch) {
+            perch.innerHTML = ''; // Clear old Suri
             const img = document.createElement('div');
             img.className = `cat-image suri-${c}`;
             perch.appendChild(img);
@@ -122,22 +127,15 @@ const UI = {
         const btn = document.getElementById('theme-toggle');
         const isL = localStorage.getItem('th') === 'l';
         if (isL) document.body.classList.add('light-mode');
-        this.updIcons(isL);
+        
         if (btn) {
             btn.onclick = () => {
                 const l = document.body.classList.toggle('light-mode');
                 localStorage.setItem('th', l ? 'l' : 'd');
-                this.updIcons(l);
             };
         }
-    },
-
-    updIcons(l) {
-        const sun = document.getElementById('sun-icon');
-        const moon = document.getElementById('moon-icon');
-        if (sun) sun.style.display = l ? 'block' : 'none';
-        if (moon) moon.style.display = l ? 'none' : 'block';
     }
 };
 
-window.onload = () => UI.init();
+// Initialize once DOM is ready
+document.addEventListener('DOMContentLoaded', () => UI.init());
