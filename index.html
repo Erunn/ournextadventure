@@ -49,30 +49,40 @@
         .label { font-size: 0.55rem; text-transform: uppercase; letter-spacing: 0.25em; margin-top: 14px; color: rgba(255, 255, 255, 0.3); font-weight: 500; }
         body.light-mode .label { color: rgba(0, 0, 0, 0.35); }
 
-        /* Task List Aesthetics */
+        /* --- THE ZEN SCROLL TASK LIST --- */
         #task-section { width: 100%; max-width: 400px; margin: 50px auto 0 auto; text-align: left; }
-        #task-list { list-style: none; padding: 0; margin: 0 0 15px 0; }
+        #task-list { 
+            list-style: none; padding: 0; margin: 0 0 15px 0; 
+            max-height: 25vh; /* Prevents the layout from stretching */
+            overflow-y: auto; /* Enables invisible scrolling */
+            scrollbar-width: none; /* Hides scrollbar in Firefox */
+            -ms-overflow-style: none; /* Hides scrollbar in IE */
+            /* The Magic Fade: Solid black at top, fading to transparent at the very bottom */
+            -webkit-mask-image: linear-gradient(to bottom, black 85%, transparent 100%);
+            mask-image: linear-gradient(to bottom, black 85%, transparent 100%);
+            padding-bottom: 20px; /* Gives the bottom items room to breathe in the fade */
+        }
+        #task-list::-webkit-scrollbar { display: none; /* Hides scrollbar in Chrome/Safari */ }
+        
         #task-list li { font-size: 0.95rem; font-weight: 400; opacity: 0.9; transition: all 0.3s ease; letter-spacing: 0.02em; display: flex; align-items: center; justify-content: space-between; min-height: 36px; }
         
         .task-text { display: flex; align-items: center; gap: 12px; cursor: pointer; flex: 1; padding: 8px 0; word-break: break-word; }
         .task-text::before { content: '○'; font-size: 1.25em; opacity: 0.95; font-weight: bold; transition: all 0.3s ease; line-height: 0; }
         
-        #task-list li.done .task-text { text-decoration: line-through; opacity: 0.45; }
+        #task-list li.done .task-text { text-decoration: line-through; opacity: 0.35; }
         #task-list li.done .task-text::before { content: '●'; opacity: 0.95; }
         
-        /* Updated: Invisible by default, highly visible on hover */
         .task-actions { display: flex; gap: 10px; align-items: center; opacity: 0; pointer-events: none; transition: opacity 0.2s ease; }
         #task-list li:hover .task-actions { opacity: 1; pointer-events: auto; }
         @media (hover: none) { .task-actions { opacity: 0.75; pointer-events: auto; } }
         
-        .action-btn { background: transparent; border: none; color: inherit; font-size: 1.2rem; font-weight: 400; cursor: pointer; opacity: 0.7; transition: all 0.2s ease; padding: 0 4px; display: flex; align-items: center; line-height: 1; }
+        .action-btn { background: transparent; border: none; color: inherit; font-size: 1rem; cursor: pointer; opacity: 0.5; transition: all 0.2s ease; padding: 0 4px; display: flex; align-items: center; justify-content: center; }
         .action-btn:hover { opacity: 1 !important; transform: scale(1.1); }
+        .action-btn svg { width: 15px; height: 15px; stroke-width: 1.5; }
 
-        /* Inline Edit Input */
         .edit-task-input { flex: 1; background: transparent; border: none; border-bottom: 1px solid rgba(255,255,255,0.4); color: inherit; font-family: inherit; font-size: 0.95rem; padding: 7px 0; margin-right: 12px; outline: none; letter-spacing: 0.02em; }
         body.light-mode .edit-task-input { border-bottom: 1px solid rgba(0,0,0,0.4); }
         
-        /* New Task Input */
         #new-task-input { width: 100%; background: transparent; border: none; border-bottom: 1px solid rgba(255,255,255,0.05); color: inherit; font-family: inherit; font-size: 0.9rem; padding: 10px 0; outline: none; transition: all 0.3s ease; letter-spacing: 0.02em; }
         #new-task-input::placeholder { color: rgba(255,255,255,0.2); font-weight: 300; }
         #new-task-input:focus { border-bottom: 1px solid rgba(255,255,255,0.2); }
