@@ -38,16 +38,23 @@ const UI = {
     },
     
     async syncTasks() {
+        // Optimistic UI updates
         localStorage.setItem('adventure_tasks', JSON.stringify(this.state.tasks));
         this.renderTasks();
 
         try {
-            await fetch(`${this.config.DB_BASE}/tasks.json`, {
+            const response = await fetch(`${this.config.DB_BASE}/tasks.json`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(this.state.tasks)
             });
-        } catch (e) {}
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error("Firebase Save Rejected. Check Security Rules:", response.status, errorText);
+            }
+        } catch (e) {
+            console.error("Network error while saving to Firebase:", e);
+        }
     },
     
     toggleTask(id) {
@@ -57,6 +64,12 @@ const UI = {
             this.syncTasks();
         }
     },
+
+    deleteTask(id) {
+        // Filter out the deleted task and trigger a cloud sync
+        this.state.tasks = this.state.tasks.filter(t => t && t.id !== id);
+        this.syncTasks();
+    },
     
     renderTasks() {
         if (!this.dom['task-list']) return;
@@ -64,9 +77,25 @@ const UI = {
         
         this.state.tasks.filter(t => t).forEach(t => {
             const li = document.createElement('li');
-            li.innerText = t.text;
             if (t.done) li.className = 'done';
-            li.onclick = () => this.toggleTask(t.id);
+            
+            // Text area (clickable for toggling)
+            const textSpan = document.createElement('span');
+            textSpan.className = 'task-text';
+            textSpan.innerText = t.text;
+            textSpan.onclick = () => this.toggleTask(t.id);
+            
+            // Delete button (clickable only for deletion)
+            const delBtn = document.createElement('button');
+            delBtn.className = 'delete-btn';
+            delBtn.innerHTML = '×';
+            delBtn.onclick = (e) => {
+                e.stopPropagation(); // Prevents the toggle click from firing
+                this.deleteTask(t.id);
+            };
+
+            li.appendChild(textSpan);
+            li.appendChild(delBtn);
             this.dom['task-list'].appendChild(li);
         });
     },
