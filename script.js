@@ -169,7 +169,7 @@ const UI = {
             
             const emoji = d.emojiLibrary?.[d.emoji?.toLowerCase()];
             const emojiHTML = emoji ? ` <span style="font-style: normal;">${emoji}</span>` : "";
-            if (this.dom['event-name']) this.dom['event-nameinnerHTML = `${d.eventName}${emojiHTML}`;
+            if (this.dom['event-name']) this.dom['event-name'].innerHTML = `${d.eventName}${emojiHTML}`;
             
             if (Number(d.useTimer) === 1 && d.targetDate) this.runTimer(d.targetDate, d.celebrationMessage);
             else this.showStatic(d.noTimerMessage);
