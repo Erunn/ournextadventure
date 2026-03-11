@@ -1,15 +1,16 @@
 const UI = {
-    state: { isRevealed: false, timer: null, last: {} },
-    config: { DB: "https://timer-92fdd-default-rtdb.europe-west1.firebasedatabase.app/.json", SURI_TOTAL: 7 },
+    state: { isRevealed: false, timer: null, last: {}, tasks: [] },
+    config: { DB_BASE: "https://timer-92fdd-default-rtdb.europe-west1.firebasedatabase.app", SURI_TOTAL: 7 },
     dom: {}, 
     
     init() {
-        ['event-name', 'full-date-display', 'description-display', 'countdown', 'days', 'hours', 'minutes', 'seconds', 'cat-perch', 'theme-toggle', 'sun-icon', 'moon-icon'].forEach(id => {
+        ['event-name', 'full-date-display', 'description-display', 'countdown', 'days', 'hours', 'minutes', 'seconds', 'cat-perch', 'theme-toggle', 'sun-icon', 'moon-icon', 'task-section', 'task-list', 'new-task-input'].forEach(id => {
             this.dom[id] = document.getElementById(id);
         });
 
         this.renderSuri();
         this.initTheme();
+        this.initTasks();
         this.load();
         
         if (this.dom['cat-perch']) {
@@ -17,6 +18,60 @@ const UI = {
         }
     },
     
+    // --- CLOUD-SYNC TASK MODULE ---
+    initTasks() {
+        const stored = localStorage.getItem('adventure_tasks');
+        if (stored) {
+            this.state.tasks = JSON.parse(stored);
+            this.renderTasks();
+        }
+
+        if (this.dom['new-task-input']) {
+            this.dom['new-task-input'].addEventListener('keypress', e => {
+                if (e.key === 'Enter' && e.target.value.trim()) {
+                    this.state.tasks.push({ id: Date.now(), text: e.target.value.trim(), done: false });
+                    e.target.value = '';
+                    this.syncTasks(); 
+                }
+            });
+        }
+    },
+    
+    async syncTasks() {
+        localStorage.setItem('adventure_tasks', JSON.stringify(this.state.tasks));
+        this.renderTasks();
+
+        try {
+            await fetch(`${this.config.DB_BASE}/tasks.json`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(this.state.tasks)
+            });
+        } catch (e) {}
+    },
+    
+    toggleTask(id) {
+        const task = this.state.tasks.find(t => t.id === id);
+        if (task) {
+            task.done = !task.done;
+            this.syncTasks();
+        }
+    },
+    
+    renderTasks() {
+        if (!this.dom['task-list']) return;
+        this.dom['task-list'].innerHTML = '';
+        
+        this.state.tasks.filter(t => t).forEach(t => {
+            const li = document.createElement('li');
+            li.innerText = t.text;
+            if (t.done) li.className = 'done';
+            li.onclick = () => this.toggleTask(t.id);
+            this.dom['task-list'].appendChild(li);
+        });
+    },
+    // ------------------------------
+
     preloadImages() {
         for(let i=1; i<=this.config.SURI_TOTAL; i++) {
             new Image().src = `https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri${i}.png`;
@@ -25,9 +80,15 @@ const UI = {
     
     async load() {
         try {
-            const r = await fetch(`${this.config.DB}?v=${Date.now()}`);
+            const r = await fetch(`${this.config.DB_BASE}/.json?v=${Date.now()}`);
             const d = await r.json();
             if (!d) throw 0;
+            
+            if (d.tasks) {
+                this.state.tasks = Array.isArray(d.tasks) ? d.tasks.filter(t => t) : Object.values(d.tasks);
+                localStorage.setItem('adventure_tasks', JSON.stringify(this.state.tasks));
+                this.renderTasks();
+            }
             
             const emoji = d.emojiLibrary?.[d.emoji?.toLowerCase()];
             const emojiHTML = emoji ? ` <span style="font-style: normal;">${emoji}</span>` : "";
@@ -80,6 +141,7 @@ const UI = {
             });
             
             if (this.dom['countdown']) this.dom['countdown'].style.display = "flex";
+            if (this.dom['task-section']) this.dom['task-section'].style.display = "block";
             this.reveal();
         };
         
@@ -101,6 +163,8 @@ const UI = {
             this.dom['description-display'].style.display = "block"; 
             this.dom['description-display'].innerText = msg; 
         }
+        
+        if (this.dom['task-section']) this.dom['task-section'].style.display = "block";
         this.reveal();
     },
     
