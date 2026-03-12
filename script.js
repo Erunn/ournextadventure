@@ -29,7 +29,6 @@ const UI = {
                 this.state.tasks = JSON.parse(stored);
                 if (!Array.isArray(this.state.tasks)) this.state.tasks = [];
             } catch (e) {
-                // If local storage is corrupted, wipe it so the app doesn't crash
                 this.state.tasks = [];
                 localStorage.removeItem('adventure_tasks');
             }
@@ -39,11 +38,7 @@ const UI = {
         if (this.dom['new-task-input']) {
             this.dom['new-task-input'].addEventListener('keypress', e => {
                 if (e.key === 'Enter' && e.target.value.trim()) {
-                    this.state.tasks.push({ 
-                        id: Date.now(), 
-                        text: e.target.value.trim(), 
-                        done: false 
-                    });
+                    this.state.tasks.push({ id: Date.now(), text: e.target.value.trim(), done: false });
                     e.target.value = '';
                     this.syncTasks(); 
                     if (this.dom['task-list']) this.dom['task-list'].scrollTop = 0;
@@ -57,11 +52,7 @@ const UI = {
         const ind = this.dom['scroll-indicator'];
         if (!list || !ind) return;
 
-        if (list.scrollHeight > list.clientHeight && (list.scrollHeight - list.scrollTop - list.clientHeight > 5)) {
-            ind.style.opacity = '1';
-        } else {
-            ind.style.opacity = '0';
-        }
+        ind.style.opacity = (list.scrollHeight > list.clientHeight && (list.scrollHeight - list.scrollTop - list.clientHeight > 5)) ? '1' : '0';
     },
     
     async syncTasks() {
@@ -69,17 +60,13 @@ const UI = {
         this.renderTasks();
 
         try {
-            const response = await fetch(`${this.config.DB_BASE}/tasks.json`, {
+            await fetch(`${this.config.DB_BASE}/tasks.json`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(this.state.tasks)
             });
-            if (!response.ok) {
-                const errorText = await response.text();
-                console.error("Firebase Save Rejected. Check Security Rules:", response.status, errorText);
-            }
         } catch (e) {
-            console.error("Network error while saving to Firebase:", e);
+            console.error("Firebase sync error:", e);
         }
     },
     
@@ -136,12 +123,12 @@ const UI = {
     
     renderTasks() {
         if (!this.dom['task-list']) return;
-        this.dom['task-list'].innerHTML = '';
+        
+        // OPTIMIZED: Using DocumentFragment to build DOM in memory (zero reflows)
+        const frag = document.createDocumentFragment();
         
         const sortedTasks = this.state.tasks.filter(t => t).sort((a, b) => {
-            if (a.done === b.done) {
-                return b.id - a.id; 
-            }
+            if (a.done === b.done) return b.id - a.id; 
             return a.done ? 1 : -1;
         });
 
@@ -178,9 +165,11 @@ const UI = {
 
             li.appendChild(textSpan);
             li.appendChild(actionsDiv);
-            this.dom['task-list'].appendChild(li);
+            frag.appendChild(li);
         });
 
+        // Insert everything at once using modern replaceChildren
+        this.dom['task-list'].replaceChildren(frag);
         setTimeout(() => this.checkScroll(), 10);
     },
 
