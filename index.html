@@ -6,7 +6,6 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#0f1115">
-    <link rel="manifest" href="manifest.json?v=final">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -18,8 +17,8 @@
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; -webkit-user-select: none; user-select: none; }
         
         html, body { height: 100dvh; width: 100%; margin: 0; overflow: hidden; overscroll-behavior: none; background-color: var(--bg-dark); }
-        body { color: var(--accent); font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; display: flex; justify-content: center; align-items: center; }
-        body.light-mode { background-color: var(--bg-light); color: #2d3748; }
+        body { color: var(--accent); font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; display: flex; justify-content: center; align-items: center; transition: background-color 0.5s ease; }
+        body.light-mode { background-color: var(--bg-light); color: #2d3748; --accent: #2d3748; }
 
         .sync-reveal { opacity: 0; transform: translateY(8px); transition: opacity 0.8s ease, transform 0.8s ease; }
         .sync-reveal.reveal { opacity: 1 !important; transform: translateY(0); }
@@ -59,40 +58,26 @@
 
         #theme-toggle { position: fixed; bottom: calc(20px + env(safe-area-inset-bottom, 20px)); right: 30px; border: none; background: none; opacity: 0.3; z-index: 100; color: inherit; cursor: pointer; }
         
-        #cat-perch { 
-            position: fixed; 
-            bottom: env(safe-area-inset-bottom, 20px); 
-            left: 20px; 
-            width: 100px; 
-            height: 100px; 
-            z-index: 999; 
-            cursor: pointer;
-        }
+        #cat-perch { position: fixed; bottom: env(safe-area-inset-bottom, 20px); left: 20px; width: 100px; height: 100px; z-index: 999; cursor: pointer; }
         @media (min-width: 1024px) { #cat-perch { width: 170px; height: 170px; } }
         
-        /* THE WATERMARK KILLER */
+        /* THE ULTIMATE SURI FIX: Pure color tinting */
         .cat-image { 
-            width: 100%; 
-            height: 100%; 
-            background-size: contain; 
-            background-repeat: no-repeat; 
-            background-position: bottom left;
-            /* Aggressively crops any pixel with less than 90% opacity (like watermarks) */
-            -webkit-mask-image: linear-gradient(black, black);
-            mask-image: linear-gradient(black, black);
-            -webkit-mask-size: 100% 100%;
-            mask-size: 100% 100%;
-            /* Forces high-contrast alpha channel rendering */
-            filter: contrast(1.1) brightness(1.0);
+            width: 100%; height: 100%; 
+            background-color: var(--accent); /* This colors the cat */
+            -webkit-mask-size: contain; mask-size: contain;
+            -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+            -webkit-mask-position: bottom left; mask-position: bottom left;
+            opacity: 0.8; /* Slight transparency for elegance */
         }
         
-        .suri-1 { background-image: url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri1.png'); }
-        .suri-2 { background-image: url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri2.png'); }
-        .suri-3 { background-image: url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri3.png'); }
-        .suri-4 { background-image: url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri4.png'); }
-        .suri-5 { background-image: url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri5.png'); }
-        .suri-6 { background-image: url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri6.png'); }
-        .suri-7 { background-image: url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri7.png'); }
+        .suri-1 { -webkit-mask-image: url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri1.png'); mask-image: url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri1.png'); }
+        .suri-2 { -webkit-mask-image: url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri2.png'); mask-image: url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri2.png'); }
+        .suri-3 { -webkit-mask-image: url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri3.png'); mask-image: url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri3.png'); }
+        .suri-4 { -webkit-mask-image: url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri4.png'); mask-image: url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri4.png'); }
+        .suri-5 { -webkit-mask-image: url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri5.png'); mask-image: url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri5.png'); }
+        .suri-6 { -webkit-mask-image: url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri6.png'); mask-image: url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri6.png'); }
+        .suri-7 { -webkit-mask-image: url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri7.png'); mask-image: url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri7.png'); }
     </style>
 </head>
 <body>
@@ -117,6 +102,6 @@
         </section>
     </main>
     
-    <script src="main.js?v=force_no_cache" defer></script>
+    <script>document.write('<script src="main.js?v=' + Date.now() + '"><\/script>');</script>
 </body>
 </html>
