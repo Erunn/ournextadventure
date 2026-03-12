@@ -10,6 +10,7 @@ const UI = {
         this.initTheme();
         this.initTasks();
         this.load();
+        
         this.dom['cat-perch']?.addEventListener('pointerdown', e => { e.preventDefault(); this.renderSuri(); });
         
         let scrollTicking = false;
