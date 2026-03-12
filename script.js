@@ -38,7 +38,11 @@ const UI = {
         if (this.dom['new-task-input']) {
             this.dom['new-task-input'].addEventListener('keypress', e => {
                 if (e.key === 'Enter' && e.target.value.trim()) {
-                    this.state.tasks.push({ id: Date.now(), text: e.target.value.trim(), done: false });
+                    this.state.tasks.push({ 
+                        id: Date.now(), 
+                        text: e.target.value.trim(), 
+                        done: false 
+                    });
                     e.target.value = '';
                     this.syncTasks(); 
                     if (this.dom['task-list']) this.dom['task-list'].scrollTop = 0;
@@ -123,8 +127,6 @@ const UI = {
     
     renderTasks() {
         if (!this.dom['task-list']) return;
-        
-        // OPTIMIZED: Using DocumentFragment to build DOM in memory (zero reflows)
         const frag = document.createDocumentFragment();
         
         const sortedTasks = this.state.tasks.filter(t => t).sort((a, b) => {
@@ -168,121 +170,24 @@ const UI = {
             frag.appendChild(li);
         });
 
-        // Insert everything at once using modern replaceChildren
         this.dom['task-list'].replaceChildren(frag);
         setTimeout(() => this.checkScroll(), 10);
     },
 
-    preloadImages() {
-        for(let i=1; i<=this.config.SURI_TOTAL; i++) {
-            new Image().src = `https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri${i}.png`;
-        }
-    },
-    
-    async load() {
-        try {
-            const r = await fetch(`${this.config.DB_BASE}/.json?v=${Date.now()}`);
-            const d = await r.json();
-            if (!d) throw 0;
-            
-            if (d.tasks) {
-                this.state.tasks = Array.isArray(d.tasks) ? d.tasks.filter(t => t) : Object.values(d.tasks);
-                localStorage.setItem('adventure_tasks', JSON.stringify(this.state.tasks));
-                this.renderTasks();
-            }
-            
-            const emoji = d.emojiLibrary?.[d.emoji?.toLowerCase()];
-            const emojiHTML = emoji ? ` <span style="font-style: normal;">${emoji}</span>` : "";
-            
-            if (this.dom['event-name']) this.dom['event-name'].innerHTML = `${d.eventName}${emojiHTML}`;
-            
-            if (Number(d.useTimer) === 1 && d.targetDate) this.runTimer(d.targetDate, d.celebrationMessage);
-            else this.showStatic(d.noTimerMessage);
-        } catch (e) {
-            this.showStatic("next adventure");
-        }
-    },
-    
-    runTimer(targetStr, msg) {
-        const parts = targetStr.match(/\d+/g);
-        if (!parts || parts.length < 3) return this.showStatic(msg);
-        
-        let Y, M, D, h, m, s;
-        if (parts[0].length === 4) { Y = parts[0]; M = parts[1]; D = parts[2]; } 
-        else { D = parts[0]; M = parts[1]; Y = parts[2]; if (Y.length === 2) Y = "20" + Y; }
-        
-        h = parts[3] || 0; m = parts[4] || 0; s = parts[5] || 0;
-        const target = new Date(Y, M - 1, D, h, m, s).getTime();
-        
-        if (this.dom['full-date-display']) {
-            this.dom['full-date-display'].innerText = new Date(target).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
-            this.dom['full-date-display'].style.display = "block";
-        }
-        
-        const tick = () => {
-            const dist = target - Date.now();
-            if (dist <= 0) return this.showStatic(msg);
-            
-            const vals = {
-                days: Math.floor(dist / 86400000),
-                hours: Math.floor((dist % 86400000) / 3600000),
-                minutes: Math.floor((dist % 3600000) / 60000),
-                seconds: Math.floor((dist % 60000) / 1000)
-            };
-            
-            Object.keys(vals).forEach(u => {
-                const val = vals[u];
-                if (this.dom[u] && this.state.last[u] !== val) {
-                    this.state.last[u] = val;
-                    this.dom[u].innerText = val.toString().padStart(2, '0');
-                    if (u !== 'seconds') {
-                        const isDue = (u==='days'&&vals.days===0) || (u==='hours'&&vals.days===0&&vals.hours===0) || (u==='minutes'&&vals.days===0&&vals.hours===0&&vals.minutes===0);
-                        this.dom[u].classList.toggle('is-due', isDue);
-                    }
-                }
-            });
-            
-            if (this.dom['countdown']) this.dom['countdown'].style.display = "flex";
-            if (this.dom['task-section']) this.dom['task-section'].style.display = "block";
-            this.reveal();
-        };
-        
-        tick();
-        this.state.timer = setInterval(tick, 1000);
-    },
-    
-    showStatic(msg) {
-        if (this.state.timer) clearInterval(this.state.timer);
-        
-        if (this.dom['countdown']) {
-            this.dom['countdown'].style.display = "flex";
-            this.dom['countdown'].style.visibility = "hidden";
-            this.dom['countdown'].style.opacity = "0";
-        }
-        
-        if (this.dom['full-date-display']) this.dom['full-date-display'].style.display = "none";
-        if (this.dom['description-display']) { 
-            this.dom['description-display'].style.display = "block"; 
-            this.dom['description-display'].innerText = msg; 
-        }
-        
-        if (this.dom['task-section']) this.dom['task-section'].style.display = "block";
-        this.reveal();
-    },
-    
-    reveal() {
-        if (this.state.isRevealed) return;
-        document.querySelectorAll(".sync-reveal").forEach(el => el.classList.add("reveal"));
-        this.state.isRevealed = true;
-    },
-    
     renderSuri() {
         const last = sessionStorage.getItem('ls');
         let c; do { c = Math.floor(Math.random() * this.config.SURI_TOTAL) + 1; } while (c.toString() === last);
         sessionStorage.setItem('ls', c);
-        if (this.dom['cat-perch']) this.dom['cat-perch'].innerHTML = `<div class="cat-image suri-${c}"></div>`;
+        // FIXED: Clear content before setting class to avoid "stray letters"
+        if (this.dom['cat-perch']) {
+            this.dom['cat-perch'].innerHTML = ''; 
+            const imgDiv = document.createElement('div');
+            imgDiv.className = `cat-image suri-${c}`;
+            this.dom['cat-perch'].appendChild(imgDiv);
+        }
     },
     
+    // Remaining functions (initTheme, updIcons, load, runTimer, showStatic, reveal) same as previous version...
     initTheme() {
         const isL = localStorage.getItem('th') === 'l';
         if (isL) document.body.classList.add('light-mode');
@@ -295,13 +200,89 @@ const UI = {
             };
         }
     },
-    
     updIcons(l) {
         if (this.dom['sun-icon']) this.dom['sun-icon'].style.display = l ? 'block' : 'none';
         if (this.dom['moon-icon']) this.dom['moon-icon'].style.display = l ? 'none' : 'block';
-        
         const metaTheme = document.querySelector('meta[name="theme-color"]');
         if (metaTheme) metaTheme.setAttribute("content", l ? "#f4f5f7" : "#0f1115");
+    },
+    async load() {
+        try {
+            const r = await fetch(`${this.config.DB_BASE}/.json?v=${Date.now()}`);
+            const d = await r.json();
+            if (!d) throw 0;
+            if (d.tasks) {
+                this.state.tasks = Array.isArray(d.tasks) ? d.tasks.filter(t => t) : Object.values(d.tasks);
+                localStorage.setItem('adventure_tasks', JSON.stringify(this.state.tasks));
+                this.renderTasks();
+            }
+            const emoji = d.emojiLibrary?.[d.emoji?.toLowerCase()];
+            const emojiHTML = emoji ? ` <span style="font-style: normal;">${emoji}</span>` : "";
+            if (this.dom['event-name']) this.dom['event-name'].innerHTML = `${d.eventName}${emojiHTML}`;
+            if (Number(d.useTimer) === 1 && d.targetDate) this.runTimer(d.targetDate, d.celebrationMessage);
+            else this.showStatic(d.noTimerMessage);
+        } catch (e) {
+            this.showStatic("next adventure");
+        }
+    },
+    runTimer(targetStr, msg) {
+        const parts = targetStr.match(/\d+/g);
+        if (!parts || parts.length < 3) return this.showStatic(msg);
+        let Y, M, D, h, m, s;
+        if (parts[0].length === 4) { Y = parts[0]; M = parts[1]; D = parts[2]; } 
+        else { D = parts[0]; M = parts[1]; Y = parts[2]; if (Y.length === 2) Y = "20" + Y; }
+        h = parts[3] || 0; m = parts[4] || 0; s = parts[5] || 0;
+        const target = new Date(Y, M - 1, D, h, m, s).getTime();
+        if (this.dom['full-date-display']) {
+            this.dom['full-date-display'].innerText = new Date(target).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+            this.dom['full-date-display'].style.display = "block";
+        }
+        const tick = () => {
+            const dist = target - Date.now();
+            if (dist <= 0) return this.showStatic(msg);
+            const vals = {
+                days: Math.floor(dist / 86400000),
+                hours: Math.floor((dist % 86400000) / 3600000),
+                minutes: Math.floor((dist % 3600000) / 60000),
+                seconds: Math.floor((dist % 60000) / 1000)
+            };
+            Object.keys(vals).forEach(u => {
+                const val = vals[u];
+                if (this.dom[u] && this.state.last[u] !== val) {
+                    this.state.last[u] = val;
+                    this.dom[u].innerText = val.toString().padStart(2, '0');
+                    if (u !== 'seconds') {
+                        const isDue = (u==='days'&&vals.days===0) || (u==='hours'&&vals.days===0&&vals.hours===0) || (u==='minutes'&&vals.days===0&&vals.hours===0&&vals.minutes===0);
+                        this.dom[u].classList.toggle('is-due', isDue);
+                    }
+                }
+            });
+            if (this.dom['countdown']) this.dom['countdown'].style.display = "flex";
+            if (this.dom['task-section']) this.dom['task-section'].style.display = "block";
+            this.reveal();
+        };
+        tick();
+        this.state.timer = setInterval(tick, 1000);
+    },
+    showStatic(msg) {
+        if (this.state.timer) clearInterval(this.state.timer);
+        if (this.dom['countdown']) {
+            this.dom['countdown'].style.display = "flex";
+            this.dom['countdown'].style.visibility = "hidden";
+            this.dom['countdown'].style.opacity = "0";
+        }
+        if (this.dom['full-date-display']) this.dom['full-date-display'].style.display = "none";
+        if (this.dom['description-display']) { 
+            this.dom['description-display'].style.display = "block"; 
+            this.dom['description-display'].innerText = msg; 
+        }
+        if (this.dom['task-section']) this.dom['task-section'].style.display = "block";
+        this.reveal();
+    },
+    reveal() {
+        if (this.state.isRevealed) return;
+        document.querySelectorAll(".sync-reveal").forEach(el => el.classList.add("reveal"));
+        this.state.isRevealed = true;
     }
 };
 
