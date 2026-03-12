@@ -4,7 +4,7 @@ const UI = {
     dom: {}, 
     
     init() {
-        const ids = ['event-name', 'countdown', 'days', 'hours', 'minutes', 'seconds', 'cat-perch', 'theme-toggle', 'sun-icon', 'moon-icon', 'task-section', 'task-list', 'new-task-input', 'scroll-indicator'];
+        const ids = ['event-name', 'full-date-display', 'countdown', 'days', 'hours', 'minutes', 'seconds', 'cat-perch', 'theme-toggle', 'sun-icon', 'moon-icon', 'task-section', 'task-list', 'new-task-input', 'scroll-indicator'];
         ids.forEach(id => this.dom[id] = document.getElementById(id));
 
         this.renderSuri();
@@ -23,7 +23,6 @@ const UI = {
         const el = this.dom['task-list'];
         const ind = this.dom['scroll-indicator'];
         if (!el || !ind) return;
-        // Visible if there is content below and we are not at the very bottom
         const hasMore = el.scrollHeight > el.clientHeight && (el.scrollHeight - el.scrollTop - el.clientHeight > 15);
         ind.classList.toggle('visible', hasMore);
     },
@@ -122,6 +121,12 @@ const UI = {
         const p = str.match(/\d+/g);
         if (!p || p.length < 3) return this.reveal();
         const target = new Date(p[0].length===4?p[0]:(p[2].length===2?"20"+p[2]:p[2]), p[1]-1, p[0].length===4?p[2]:p[0], p[3]||0, p[4]||0, p[5]||0).getTime();
+        
+        // RE-ADDED: Formatting the display date
+        if (this.dom['full-date-display']) {
+            this.dom['full-date-display'].innerText = new Date(target).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+            this.dom['full-date-display'].style.display = "block";
+        }
         
         const tick = () => {
             const diff = target - Date.now();
