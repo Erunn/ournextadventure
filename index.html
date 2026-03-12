@@ -8,10 +8,10 @@
     <meta name="theme-color" content="#0f1115">
     
     <script>
-        // THE SELF-DESTRUCT: Forcefully kills any zombie Service Workers on your phone
+        // Forced unregistration of any old service workers to fix mobile refresh
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.getRegistrations().then(registrations => {
-                for(let registration of registrations) { registration.unregister(); }
+            navigator.serviceWorker.getRegistrations().then(regs => {
+                for(let r of regs) { r.unregister(); }
             });
         }
     </script>
@@ -45,8 +45,9 @@
         .sync-reveal { opacity: 0; transform: translateY(8px); transition: opacity 0.8s ease, transform 0.8s ease; }
         .sync-reveal.reveal { opacity: 1 !important; transform: translateY(0); }
         
-        .timer-container { position: relative; text-align: center; width: 90%; max-width: 500px; padding: 40px 0; }
+        .timer-container { position: relative; text-align: center; width: 90%; max-width: 500px; padding: 60px 0; }
         h1 { font-weight: 500; letter-spacing: -0.05em; font-size: clamp(2.2rem, 7vw, 2.8rem); margin: 0 0 16px 0; text-transform: lowercase; }
+        h1 span { font-size: 0.8em; margin-left: 4px; }
         
         #full-date-display, #description-display { margin-bottom: 40px; font-size: 0.95rem; font-weight: 400; opacity: 0.6; }
         
@@ -67,25 +68,31 @@
         
         #task-list li { 
             font-size: 0.95rem; display: flex; align-items: center; justify-content: space-between; 
-            min-height: 48px; border-bottom: 1px solid rgba(128,128,128,0.05); 
+            min-height: 48px; border-bottom: 1px solid rgba(128,128,128,0.05);
+            animation: taskIn 0.35s cubic-bezier(0.2, 0, 0, 1) forwards;
+        }
+        
+        @keyframes taskIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         
         .task-text { display: flex; align-items: center; gap: 14px; cursor: pointer; flex: 1; padding: 10px 0; }
-        .task-text::before { content: '○'; font-size: 1.3em; opacity: 0.5; width: 24px; text-align: center; display: inline-block; flex-shrink: 0; }
+        .task-text::before { content: '○'; font-size: 1.3em; opacity: 0.4; width: 24px; text-align: center; flex-shrink: 0; }
         
-        li.done .task-text { text-decoration: line-through; opacity: 0.35; }
-        li.done .task-text::before { content: '●'; opacity: 0.8; }
+        li.done .task-text { text-decoration: line-through; opacity: 0.3; }
+        li.done .task-text::before { content: '●'; opacity: 0.7; }
         
-        .task-actions { display: flex; gap: 4px; opacity: 0; transition: opacity 0.2s; }
+        .task-actions { display: flex; gap: 2px; opacity: 0; transition: opacity 0.2s; }
         #task-list li:hover .task-actions { opacity: 1; }
         @media (hover: none) { .task-actions { opacity: 0.5; } }
         
-        .action-btn { background: transparent; border: none; color: inherit; padding: 8px; cursor: pointer; display: flex; align-items: center; }
-        .action-btn svg { width: 16px; height: 16px; opacity: 0.6; }
+        .action-btn { background: transparent; border: none; color: inherit; padding: 10px; cursor: pointer; display: flex; align-items: center; }
+        .action-btn svg { width: 16px; height: 16px; opacity: 0.5; }
 
         .edit-task-input { flex: 1; background: transparent; border: none; border-bottom: 1px solid var(--accent); color: inherit; font-family: inherit; font-size: 0.95rem; padding: 4px 0; outline: none; }
 
-        #theme-toggle { position: fixed; bottom: 30px; right: 30px; border: none; background: none; opacity: 0.3; cursor: pointer; color: inherit; z-index: 100; }
+        #theme-toggle { position: fixed; bottom: 30px; right: 30px; border: none; background: none; opacity: 0.25; cursor: pointer; color: inherit; z-index: 100; }
         
         #cat-perch { position: fixed; bottom: 20px; left: 20px; width: 110px; height: 110px; z-index: 999; cursor: pointer; }
         @media (min-width: 1024px) { #cat-perch { width: 170px; height: 170px; } }
@@ -94,7 +101,6 @@
             width: 100%; height: 100%; 
             background-size: contain; background-repeat: no-repeat; background-position: bottom left;
             image-rendering: -webkit-optimize-contrast;
-            /* Threshold mask to hide faint artifacts */
             -webkit-mask-image: radial-gradient(circle at center, black 70%, rgba(0,0,0,0.2) 100%);
             mask-image: radial-gradient(circle at center, black 70%, rgba(0,0,0,0.2) 100%);
         }
@@ -110,7 +116,7 @@
 </head>
 <body>
     <div id="cat-perch" class="sync-reveal"></div> 
-    <button id="theme-toggle" class="sync-reveal" aria-label="Toggle theme">
+    <button id="theme-toggle" class="sync-reveal">
         <svg id="sun-icon" style="display:none;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
         <svg id="moon-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
     </button>
