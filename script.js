@@ -18,6 +18,7 @@ const UI = {
         }
     },
     
+    // --- CLOUD-SYNC TASK MODULE ---
     initTasks() {
         const stored = localStorage.getItem('adventure_tasks');
         if (stored) {
@@ -28,7 +29,12 @@ const UI = {
         if (this.dom['new-task-input']) {
             this.dom['new-task-input'].addEventListener('keypress', e => {
                 if (e.key === 'Enter' && e.target.value.trim()) {
-                    this.state.tasks.push({ id: Date.now(), text: e.target.value.trim(), done: false });
+                    // Stripped updatedAt tracking, relying purely on creation ID
+                    this.state.tasks.push({ 
+                        id: Date.now(), 
+                        text: e.target.value.trim(), 
+                        done: false 
+                    });
                     e.target.value = '';
                     this.syncTasks(); 
                     if (this.dom['task-list']) this.dom['task-list'].scrollTop = 0;
@@ -111,13 +117,13 @@ const UI = {
         if (!this.dom['task-list']) return;
         this.dom['task-list'].innerHTML = '';
         
-        // AUTO-SORTING LOGIC: 
-        // 1. Unchecked tasks float to the top, done tasks drop to the bottom.
-        // 2. Unchecked tasks are sorted by Newest (highest ID) -> Oldest (lowest ID).
+        // PURE ID SORTING LOGIC:
         const sortedTasks = this.state.tasks.filter(t => t).sort((a, b) => {
+            // If they are in the same group (both done or both undone), sort by newest first
             if (a.done === b.done) {
                 return b.id - a.id; 
             }
+            // Otherwise, put undone tasks above done tasks
             return a.done ? 1 : -1;
         });
 
