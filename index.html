@@ -6,88 +6,49 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#0f1115">
-    
+    <link rel="manifest" href="manifest.json?v=final">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;400;500&display=swap" rel="stylesheet">
-    
     <title>next adventure</title>
     <style>
         :root { --bg-dark: #0f1115; --bg-light: #f4f5f7; --accent: rgba(255, 255, 255, 0.9); }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; -webkit-user-select: none; user-select: none; }
-        
         html, body { height: 100dvh; width: 100%; margin: 0; overflow: hidden; overscroll-behavior: none; background-color: var(--bg-dark); }
         body { color: var(--accent); font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; display: flex; justify-content: center; align-items: center; }
         body.light-mode { background-color: var(--bg-light); color: #2d3748; }
-
         .sync-reveal { opacity: 0; transform: translate3d(0, 8px, 0); transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.2, 0, 0, 1); }
         .sync-reveal.reveal { opacity: 1 !important; transform: translate3d(0, 0, 0); }
-        
         .timer-container { position: relative; text-align: center; width: 90%; max-width: 500px; z-index: 10; display: flex; flex-direction: column; align-items: center; }
         h1 { font-weight: 500; letter-spacing: -0.05em; font-size: clamp(2rem, 7vw, 2.5rem); margin: 0 0 16px 0; text-transform: lowercase; }
-        
         #full-date-display, #description-display { margin-bottom: 40px; font-size: 0.95rem; font-weight: 400; opacity: 0.6; }
-        
         #countdown { display: flex; justify-content: center; align-items: center; width: 100%; max-width: 420px; gap: 12px; }
         .time-box { flex: 1; display: flex; flex-direction: column; align-items: center; height: 85px; }
         .time-box span { font-size: clamp(2.4rem, 8vw, 3.8rem); font-weight: 200; display: block; font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
         .time-box span.is-due { opacity: 0.1; }
-        
         .label { font-size: 0.55rem; text-transform: uppercase; letter-spacing: 0.25em; margin-top: 14px; opacity: 0.3; }
-
         #task-section { position: relative; width: 100%; max-width: 400px; margin: 50px auto 0 auto; text-align: left; }
         #new-task-input { width: 100%; background: transparent; border: none; border-bottom: 1px solid transparent; color: inherit; font-family: inherit; font-size: 0.95rem; padding: 10px 0; outline: none; }
         #new-task-input::placeholder { color: rgba(128,128,128,0.4); }
         #new-task-input:focus { border-bottom: 1px solid rgba(128,128,128,0.2); }
-
-        #task-list { 
-            list-style: none; padding: 0; margin: 0; 
-            max-height: 25vh; overflow-y: auto; scrollbar-width: none; 
-            -webkit-mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
-        }
+        #task-list { list-style: none; padding: 0; margin: 0; max-height: 25vh; overflow-y: auto; scrollbar-width: none; -webkit-mask-image: linear-gradient(to bottom, black 80%, transparent 100%); }
         #task-list::-webkit-scrollbar { display: none; }
         #task-list li { font-size: 0.95rem; display: flex; align-items: center; justify-content: space-between; min-height: 36px; }
-        
         .task-text { display: flex; align-items: center; gap: 12px; cursor: pointer; flex: 1; padding: 8px 0; }
         .task-text::before { content: '○'; font-size: 1.2em; opacity: 0.7; }
         #task-list li.done .task-text { text-decoration: line-through; opacity: 0.35; }
         #task-list li.done .task-text::before { content: '●'; }
-        
         .task-actions { display: flex; gap: 10px; opacity: 0; transition: opacity 0.2s ease; }
         #task-list li:hover .task-actions { opacity: 1; }
         @media (hover: none) { .task-actions { opacity: 0.6; } }
-        
         .action-btn { background: transparent; border: none; color: inherit; opacity: 0.5; cursor: pointer; display: flex; }
         .action-btn svg { width: 15px; height: 15px; stroke-width: 1.5; }
-
-        #scroll-indicator {
-            position: absolute; bottom: -5px; left: 50%; transform: translateX(-50%);
-            opacity: 0; transition: opacity 0.4s ease; color: rgba(128,128,128,0.4);
-            animation: breathe 2s infinite ease-in-out;
-        }
+        #scroll-indicator { position: absolute; bottom: -5px; left: 50%; transform: translateX(-50%); opacity: 0; transition: opacity 0.4s ease; color: rgba(128,128,128,0.4); animation: breathe 2s infinite ease-in-out; }
         @keyframes breathe { 0%, 100% { transform: translate(-50%, 0); } 50% { transform: translate(-50%, 4px); } }
-
         #theme-toggle { position: fixed; bottom: calc(20px + env(safe-area-inset-bottom, 20px)); right: 30px; border: none; background: none; opacity: 0.3; z-index: 100; color: inherit; cursor: pointer; }
-        
-        #cat-perch { 
-            position: fixed; bottom: env(safe-area-inset-bottom, 20px); left: 20px; 
-            width: 100px; height: 100px; z-index: 999; cursor: pointer;
-        }
+        #cat-perch { position: fixed; bottom: env(safe-area-inset-bottom, 20px); left: 20px; width: 100px; height: 100px; z-index: 999; cursor: pointer; }
         @media (min-width: 1024px) { #cat-perch { width: 170px; height: 170px; } }
-        
-        /* THE ARTIFACT KILLER: Aggressive clipping to kill watermark noise */
-        .cat-image { 
-            width: 100%; height: 100%; 
-            background-size: contain; background-repeat: no-repeat; background-position: bottom left; 
-            opacity: 1 !important;
-            /* Forces clean edges by discarding low-alpha pixels entirely */
-            -webkit-mask-image: linear-gradient(black, black);
-            mask-image: linear-gradient(black, black);
-            -webkit-filter: drop-shadow(0 0 0 transparent);
-            filter: drop-shadow(0 0 0 transparent);
-            will-change: transform;
-        }
-        
+        .cat-image { width: 100%; height: 100%; background-size: contain; background-repeat: no-repeat; background-position: bottom left; opacity: 1 !important; transform: translate3d(0,0,0); }
         .suri-1 { background-image: url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri1.png'); }
         .suri-2 { background-image: url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri2.png'); }
         .suri-3 { background-image: url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri3.png'); }
@@ -103,7 +64,6 @@
         <svg id="sun-icon" style="display:none;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
         <svg id="moon-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
     </button>
-    
     <main class="timer-container sync-reveal">
         <h1 id="event-name"></h1>
         <div id="full-date-display" style="display:none;"></div>
@@ -120,8 +80,7 @@
             <div id="scroll-indicator"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg></div>
         </section>
     </main>
-    
-    <script src="app.js?v=nuclear_v2" defer></script>
+    <script src="main.js" defer></script>
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
@@ -130,7 +89,7 @@
                         const installingWorker = reg.installing;
                         installingWorker.onstatechange = () => {
                             if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                                window.location.reload(); 
+                                window.location.reload();
                             }
                         };
                     };
