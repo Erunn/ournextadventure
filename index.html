@@ -6,7 +6,6 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#0f1115">
-    <link rel="manifest" href="manifest.json?v=final">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -76,15 +75,17 @@
         }
         @media (min-width: 1024px) { #cat-perch { width: 170px; height: 170px; } }
         
-        /* NEW RENDERING FIX: Use high contrast to clip hidden alpha artifacts/letters */
+        /* THE ARTIFACT KILLER: Aggressive clipping to kill watermark noise */
         .cat-image { 
             width: 100%; height: 100%; 
             background-size: contain; background-repeat: no-repeat; background-position: bottom left; 
-            -webkit-filter: brightness(1.0) contrast(1.0);
-            filter: brightness(1.0) contrast(1.0);
-            transform: translate3d(0,0,0);
             opacity: 1 !important;
-            image-rendering: -webkit-optimize-contrast;
+            /* Forces clean edges by discarding low-alpha pixels entirely */
+            -webkit-mask-image: linear-gradient(black, black);
+            mask-image: linear-gradient(black, black);
+            -webkit-filter: drop-shadow(0 0 0 transparent);
+            filter: drop-shadow(0 0 0 transparent);
+            will-change: transform;
         }
         
         .suri-1 { background-image: url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri1.png'); }
@@ -120,19 +121,20 @@
         </section>
     </main>
     
-    <script src="script.js?v=2026_FINAL" defer></script>
+    <script src="app.js?v=nuclear_v2" defer></script>
     <script>
-        // NEW AUTO-UPDATE RELOAD SCRIPT
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js').then(reg => {
-                reg.onupdatefound = () => {
-                    const installingWorker = reg.installing;
-                    installingWorker.onstatechange = () => {
-                        if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                            window.location.reload(); // Force update
-                        }
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js').then(reg => {
+                    reg.onupdatefound = () => {
+                        const installingWorker = reg.installing;
+                        installingWorker.onstatechange = () => {
+                            if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                window.location.reload(); 
+                            }
+                        };
                     };
-                };
+                });
             });
         }
     </script>
