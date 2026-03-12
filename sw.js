@@ -1,5 +1,5 @@
-const CACHE_NAME = 'adventure-v-lockdown';
-const ASSETS = ['/', '/index.html', '/script.js?v=final_rev', '/manifest.json'];
+const CACHE_NAME = 'adventure-v-zen-lock';
+const ASSETS = ['/', '/index.html', '/script.js?v=locked_down', '/manifest.json'];
 
 self.addEventListener('install', e => {
   self.skipWaiting();
