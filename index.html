@@ -47,14 +47,17 @@
         
         h1 { font-weight: 500; letter-spacing: -0.05em; font-size: clamp(1.8rem, 6vw, 2.5rem); margin: 0; text-transform: lowercase; }
 
-        /* FIXED POLAROID HEADER: Smaller on mobile, centered, and fully visible */
+        /* POLAROID HEADER: Big on Desktop, Responsive on Mobile */
         .polaroid-header {
-            position: absolute; top: 10px; left: 50%; transform: translateX(-50%);
-            width: 80%; max-width: 260px; cursor: pointer; z-index: 15;
+            position: absolute; top: 15px; left: 50%; transform: translateX(-50%);
+            width: 85%; max-width: 320px; cursor: pointer; z-index: 15;
             animation: sway 6s ease-in-out infinite; transform-origin: top center;
         }
         .polaroid-header img { width: 100%; height: auto; display: block; }
         
+        @media (min-width: 1024px) { .polaroid-header { max-width: 420px; top: 20px; } }
+        @media (max-width: 600px) { .polaroid-header { max-width: 240px; top: 25px; } }
+
         @keyframes sway {
             0%, 100% { transform: translateX(-50%) rotate(-1deg); }
             50% { transform: translateX(-50%) rotate(1deg); }
@@ -83,28 +86,37 @@
         li.done .task-text { text-decoration: line-through; opacity: 0.3; }
         li.done .task-text::before { content: '●'; opacity: 0.8; }
         
-        .task-actions { display: flex; gap: 0px; opacity: 0; transition: opacity 0.2s; flex-shrink: 0; }
-        #task-list li:hover .task-actions { opacity: 1; }
-        @media (hover: none) { .task-actions { opacity: 0.5; } }
-        
         .action-btn { background: transparent; border: none; color: inherit; padding: 6px; cursor: pointer; display: flex; align-items: center; opacity: 0.3; transition: opacity 0.2s; }
         .action-btn:hover { opacity: 1; }
         .action-btn svg { width: 16px; height: 16px; stroke: currentColor; fill: none; }
 
         .edit-task-input { flex: 1; background: transparent; border: none; border-bottom: 1px solid var(--accent); color: inherit; font-family: inherit; font-size: 0.95rem; padding: 4px 0; outline: none; }
 
+        /* LIGHTBOX & POLAROID FRAME */
         #lightbox {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(15, 17, 21, 0.95); display: flex; justify-content: center; align-items: center;
-            opacity: 0; pointer-events: none; transition: opacity 0.4s ease; z-index: 10000; padding: 20px; backdrop-filter: blur(5px);
+            background: rgba(15, 17, 21, 0.98); display: flex; justify-content: center; align-items: center;
+            opacity: 0; pointer-events: none; transition: opacity 0.4s ease; z-index: 10000; padding: 20px; backdrop-filter: blur(8px);
         }
         #lightbox.open { opacity: 1; pointer-events: auto; }
-        #lightbox img {
-            max-width: 90%; max-height: 75vh; border: 10px solid white; border-bottom: 35px solid white;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5); transform: scale(0.9) rotate(-2deg);
+
+        .polaroid-frame {
+            background: #fff; padding: 15px 15px 60px 15px; 
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            transform: scale(0.9) rotate(-2deg);
             transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            max-width: 90%; max-height: 80vh;
+            display: flex; flex-direction: column;
         }
-        #lightbox.open img { transform: scale(1) rotate(0deg); }
+        #lightbox.open .polaroid-frame { transform: scale(1) rotate(0deg); }
+
+        .polaroid-empty {
+            width: 300px; height: 300px; background: #fdfdfd;
+            display: flex; align-items: center; justify-content: center; text-align: center;
+            padding: 40px; color: #4a5568; font-size: 1.1rem; line-height: 1.5; font-style: italic;
+            border: 1px inset rgba(0,0,0,0.03);
+        }
+        @media (max-width: 600px) { .polaroid-empty { width: 260px; height: 260px; font-size: 1rem; } }
 
         #scroll-indicator { position: absolute; bottom: -25px; left: 50%; transform: translateX(-50%); opacity: 0; transition: opacity 0.4s ease; pointer-events: none; display: flex; justify-content: center; }
         #scroll-indicator svg { width: 20px; height: 20px; stroke: currentColor; fill: none; }
@@ -120,11 +132,6 @@
 
         .hidden-v { opacity: 0 !important; pointer-events: none; }
         
-        @media (max-width: 600px) { 
-            .polaroid-header { max-width: 160px; top: 15px; } 
-            #lightbox img { border-width: 8px; border-bottom-width: 30px; }
-        }
-        
         .suri-1 { background-image: url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri1.png'); }
         .suri-2 { background-image: url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri2.png'); }
         .suri-3 { background-image: url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri3.png'); }
@@ -136,7 +143,12 @@
 </head>
 <body>
     <div id="lightbox" onclick="UI.toggleLightbox(false)">
-        <img src="YOUR_BIG_PHOTO_URL" id="enlarged-photo">
+        <div class="polaroid-frame" onclick="event.stopPropagation()">
+            <img src="" id="enlarged-photo" style="display:none;">
+            <div id="enlarged-empty" class="polaroid-empty" style="display:none;">
+                first photo pending. requirements: you, me, and a camera.
+            </div>
+        </div>
     </div>
 
     <div class="polaroid-header sync-reveal" onclick="UI.toggleLightbox(true)">
