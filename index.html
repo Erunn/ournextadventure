@@ -17,19 +17,8 @@
         :root { --bg-dark: #0f1115; --bg-light: #f4f5f7; --accent: rgba(255, 255, 255, 0.9); --safe-bottom: env(safe-area-inset-bottom, 20px); }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; -webkit-user-select: none; user-select: none; }
         
-        html, body { 
-            height: 100dvh; width: 100%; margin: 0;
-            overflow: hidden; overscroll-behavior: none; 
-            background-color: var(--bg-dark);
-        }
-        
-        body { 
-            color: var(--accent); font-family: 'Inter', sans-serif; 
-            -webkit-font-smoothing: antialiased; 
-            display: flex; justify-content: center; align-items: center; 
-            transition: background-color 0.5s ease; 
-        }
-        
+        html, body { height: 100dvh; width: 100%; margin: 0; overflow: hidden; overscroll-behavior: none; background-color: var(--bg-dark); }
+        body { color: var(--accent); font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; display: flex; justify-content: center; align-items: center; transition: background-color 0.5s ease; }
         body.light-mode { background-color: var(--bg-light); color: #2d3748; }
 
         .sync-reveal { opacity: 0; transform: translate3d(0, 8px, 0); transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.2, 0, 0, 1); }
@@ -81,12 +70,13 @@
 
         #theme-toggle { position: fixed; bottom: calc(20px + var(--safe-bottom)); right: 30px; border: none; background: none; opacity: 0.3; z-index: 100; color: inherit; cursor: pointer; }
         
+        /* ADJUSTED: Better Suri responsiveness */
         #cat-perch { 
             position: fixed; bottom: var(--safe-bottom); left: 20px; 
             width: 100px; height: 100px; z-index: 999; cursor: pointer;
-            overflow: hidden; text-indent: -9999px; /* Absolute kill for any stray text */
+            font-size: 0; line-height: 0; color: transparent; /* No artifacts */
         }
-        @media (min-width: 1024px) { #cat-perch { width: 160px; height: 160px; } }
+        @media (min-width: 1024px) { #cat-perch { width: 150px; height: 150px; } }
         
         .cat-image { 
             width: 100%; height: 100%; 
@@ -128,7 +118,7 @@
         </section>
     </main>
     
-    <script src="script.js?v=final_rev" defer></script>
+    <script src="script.js?v=locked_down" defer></script>
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
