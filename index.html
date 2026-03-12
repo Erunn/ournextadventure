@@ -8,6 +8,7 @@
     <meta name="theme-color" content="#0f1115">
     
     <script>
+        // Force unregister service workers to enable pull-to-refresh
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.getRegistrations().then(regs => {
                 for(let r of regs) r.unregister();
@@ -24,15 +25,12 @@
         :root { --bg-dark: #0f1115; --bg-light: #f4f5f7; --accent: rgba(255, 255, 255, 0.9); }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
         
-        /* FIX: Enable vertical scroll for pull-to-refresh but hide the bar */
         html, body { 
             height: 100%; width: 100%; margin: 0; 
             background-color: var(--bg-dark); 
             overflow-x: hidden;
-            overflow-y: auto;
-            scrollbar-width: none; /* Firefox */
+            overflow-y: auto; /* Required for pull-to-refresh */
         }
-        body::-webkit-scrollbar { display: none; } /* Safari/Chrome */
         
         body { 
             color: var(--accent); font-family: 'Inter', sans-serif; 
@@ -46,15 +44,16 @@
         .sync-reveal { opacity: 0; transform: translateY(12px); transition: opacity 1s ease, transform 1s cubic-bezier(0.2, 0, 0, 1); }
         .sync-reveal.reveal { opacity: 1 !important; transform: translateY(0); }
         
-        /* FIX: min-height 100% and centering within the scrollable body */
+        /* Layout: Centered vertically and horizontally */
         .timer-container { 
             position: relative; text-align: center; width: 90%; max-width: 450px; 
             z-index: 10; display: flex; flex-direction: column; align-items: center; 
-            min-height: 100dvh; justify-content: center; padding: 40px 0;
+            min-height: 100dvh; justify-content: center; padding: 60px 0;
         }
         
         h1 { font-weight: 500; letter-spacing: -0.05em; font-size: clamp(1.8rem, 6vw, 2.5rem); margin: 0 0 8px 0; text-transform: lowercase; }
-        
+        h1 span { font-size: 0.8em; margin-left: 8px; }
+
         #full-date-display, #description-display { font-size: 0.95rem; opacity: 0.5; font-weight: 400; margin-bottom: 30px; letter-spacing: 0.02em; }
         
         #countdown { display: flex; justify-content: center; gap: 15px; margin-bottom: 40px; width: 100%; }
@@ -71,8 +70,8 @@
         #task-list { 
             list-style: none; padding: 0; margin: 0; 
             max-height: 25vh; overflow-y: auto; scrollbar-width: none; 
-            -webkit-mask-image: linear-gradient(to bottom, black 70%, transparent 100%);
-            mask-image: linear-gradient(to bottom, black 70%, transparent 100%);
+            -webkit-mask-image: linear-gradient(to bottom, black 75%, transparent 100%);
+            mask-image: linear-gradient(to bottom, black 75%, transparent 100%);
         }
         #task-list::-webkit-scrollbar { display: none; }
         #task-list li { font-size: 0.95rem; display: flex; align-items: center; justify-content: space-between; min-height: 48px; border-bottom: 1px solid rgba(128,128,128,0.05); }
@@ -94,12 +93,18 @@
         #scroll-indicator.visible { opacity: 0.5; animation: bounce 2s infinite; }
         @keyframes bounce { 0%, 20%, 50%, 80%, 100% {transform: translate(-50%, 0);} 40% {transform: translate(-50%, -5px);} 60% {transform: translate(-50%, -3px);} }
 
+        /* THEME TOGGLE FIXED (Bottom Right) */
         #theme-toggle { position: fixed; bottom: 30px; right: 30px; border: none; background: none; opacity: 0.3; cursor: pointer; color: inherit; z-index: 100; padding: 10px; }
         #theme-toggle svg { width: 22px; height: 22px; stroke: currentColor; fill: none; display: block; }
         
         #cat-perch { position: fixed; bottom: 20px; left: 20px; width: 100px; height: 100px; z-index: 999; cursor: pointer; }
         @media (min-width: 1024px) { #cat-perch { width: 160px; height: 160px; } }
-        .cat-image { width: 100%; height: 100%; background-size: contain; background-repeat: no-repeat; background-position: bottom left; }
+        .cat-image { 
+            width: 100%; height: 100%; background-size: contain; background-repeat: no-repeat; background-position: bottom left; 
+            image-rendering: -webkit-optimize-contrast;
+            /* Anti-watermark mask applied ONLY to cat perch */
+            -webkit-mask-image: radial-gradient(circle at center, black 80%, transparent 100%);
+        }
 
         .suri-1 { background-image: url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri1.png'); }
         .suri-2 { background-image: url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri2.png'); }
