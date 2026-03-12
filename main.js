@@ -115,20 +115,20 @@ const UI = {
             const em = d.emojiLibrary?.[d.emoji?.toLowerCase()] || "";
             if (this.dom['event-name']) this.dom['event-name'].innerHTML = d.eventName + (em ? ` <span>${em}</span>` : "");
             
-            // Task section is always visible
             if (this.dom['task-section']) this.dom['task-section'].style.display = "block";
 
             if (Number(d.useTimer) === 1) {
-                this.runTimer(d.targetDate);
+                // Pass the celebration message into the timer function
+                this.runTimer(d.targetDate, d.celebrationMessage);
             } else {
                 this.showStatic(d.noTimerMessage);
             }
         } catch (e) { this.reveal(); }
     },
 
-    runTimer(str) {
+    runTimer(str, celebrationMsg) {
         const p = str.match(/\d+/g);
-        if (!p || p.length < 3) return this.showStatic("next adventure");
+        if (!p || p.length < 3) return this.showStatic(celebrationMsg);
         const target = new Date(p[0].length===4?p[0]:(p[2].length===2?"20"+p[2]:p[2]), p[1]-1, p[0].length===4?p[2]:p[0], p[3]||0, p[4]||0, p[5]||0).getTime();
         
         if (this.dom['full-date-display']) {
@@ -138,14 +138,32 @@ const UI = {
         
         const tick = () => {
             const diff = target - Date.now();
-            if (diff <= 0) return this.showStatic("Time's up!");
-            const vals = { days: Math.floor(diff/864e5), hours: Math.floor((diff%864e5)/36e5), minutes: Math.floor((diff%36e5)/6e4), seconds: Math.floor((diff%6e4)/1e3) };
+            
+            // ACHIEVED: Show celebration message when achieved
+            if (diff <= 0) return this.showStatic(celebrationMsg || "Time's up!");
+
+            const vals = { 
+                days: Math.floor(diff/864e5), 
+                hours: Math.floor((diff%864e5)/36e5), 
+                minutes: Math.floor((diff%36e5)/6e4), 
+                seconds: Math.floor((diff%6e4)/1e3) 
+            };
+
             Object.keys(vals).forEach(u => {
                 if (this.dom[u]) {
                     this.dom[u].innerText = vals[u].toString().padStart(2, '0');
-                    if (u !== 'seconds') this.dom[u].classList.toggle('is-due', (u==='days'&&vals.days===0)||(u==='hours'&&vals.days===0&&vals.hours===0));
+                    
+                    // FIXED: Disable units (opacity) if they are zero
+                    if (u === 'days') {
+                        this.dom[u].classList.toggle('is-due', vals.days === 0);
+                    } else if (u === 'hours') {
+                        this.dom[u].classList.toggle('is-due', vals.days === 0 && vals.hours === 0);
+                    } else if (u === 'minutes') {
+                        this.dom[u].classList.toggle('is-due', vals.days === 0 && vals.hours === 0 && vals.minutes === 0);
+                    }
                 }
             });
+
             if (this.dom['countdown']) this.dom['countdown'].style.display = "flex";
             this.reveal();
         };
