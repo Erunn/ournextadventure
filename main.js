@@ -22,11 +22,8 @@ const UI = {
         const stored = localStorage.getItem('adventure_tasks');
         if (stored) {
             try {
-                this.state.tasks = JSON.parse(stored);
-                if (!Array.isArray(this.state.tasks)) this.state.tasks = [];
-            } catch (e) {
-                this.state.tasks = [];
-            }
+                this.state.tasks = JSON.parse(stored).filter(t => t);
+            } catch (e) { this.state.tasks = []; }
             this.renderTasks();
         }
 
@@ -36,7 +33,6 @@ const UI = {
                     this.state.tasks.push({ id: Date.now(), text: e.target.value.trim(), done: false });
                     e.target.value = '';
                     this.syncTasks(); 
-                    if (this.dom['task-list']) this.dom['task-list'].scrollTop = 0;
                 }
             });
         }
@@ -48,10 +44,9 @@ const UI = {
         try {
             await fetch(`${this.config.DB_BASE}/tasks.json`, {
                 method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(this.state.tasks)
             });
-        } catch (e) { console.error("Sync error:", e); }
+        } catch (e) { console.error(e); }
     },
     
     toggleTask(id) {
@@ -60,14 +55,14 @@ const UI = {
     },
 
     deleteTask(id) {
-        this.state.tasks = this.state.tasks.filter(x => x && x.id !== id);
+        this.state.tasks = this.state.tasks.filter(x => x.id !== id);
         this.syncTasks();
     },
 
     updateTask(id, text) {
         const t = this.state.tasks.find(x => x.id === id);
         if (t && text.trim()) { t.text = text.trim(); this.syncTasks(); }
-        else { this.renderTasks(); }
+        else this.renderTasks();
     },
 
     enterEditMode(li, task) {
@@ -93,7 +88,7 @@ const UI = {
         if (!this.dom['task-list']) return;
         const frag = document.createDocumentFragment();
         
-        const sorted = [...this.state.tasks].filter(t => t).sort((a, b) => {
+        const sorted = [...this.state.tasks].sort((a, b) => {
             if (a.done === b.done) return b.id - a.id; 
             return a.done ? 1 : -1;
         });
@@ -120,10 +115,8 @@ const UI = {
             del.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>`;
             del.onclick = (e) => { e.stopPropagation(); this.deleteTask(t.id); };
 
-            acts.appendChild(edit);
-            acts.appendChild(del);
-            li.appendChild(txt);
-            li.appendChild(acts);
+            acts.append(edit, del);
+            li.append(txt, acts);
             frag.appendChild(li);
         });
         this.dom['task-list'].replaceChildren(frag);
@@ -133,9 +126,7 @@ const UI = {
         const last = sessionStorage.getItem('ls');
         let c; do { c = Math.floor(Math.random() * this.config.SURI_TOTAL) + 1; } while (c.toString() === last);
         sessionStorage.setItem('ls', c);
-        if (this.dom['cat-perch']) {
-            this.dom['cat-perch'].innerHTML = `<div class="cat-image suri-${c}"></div>`;
-        }
+        if (this.dom['cat-perch']) this.dom['cat-perch'].innerHTML = `<div class="cat-image suri-${c}"></div>`;
     },
     
     initTheme() {
@@ -154,15 +145,14 @@ const UI = {
     updIcons(l) {
         if (this.dom['sun-icon']) this.dom['sun-icon'].style.display = l ? 'block' : 'none';
         if (this.dom['moon-icon']) this.dom['moon-icon'].style.display = l ? 'none' : 'block';
-        const meta = document.querySelector('meta[name="theme-color"]');
-        if (meta) meta.setAttribute("content", l ? "#f4f5f7" : "#0f1115");
+        const m = document.querySelector('meta[name="theme-color"]');
+        if (m) m.setAttribute("content", l ? "#f4f5f7" : "#0f1115");
     },
 
     async load() {
         try {
             const r = await fetch(`${this.config.DB_BASE}/.json?v=${Date.now()}`);
             const d = await r.json();
-            if (!d) throw 0;
             if (d.tasks) {
                 this.state.tasks = Array.isArray(d.tasks) ? d.tasks.filter(t => t) : Object.values(d.tasks);
                 this.renderTasks();
@@ -177,10 +167,7 @@ const UI = {
     runTimer(str, msg) {
         const p = str.match(/\d+/g);
         if (!p || p.length < 3) return this.showStatic(msg);
-        let Y = p[0].length === 4 ? p[0] : (p[2].length === 2 ? "20"+p[2] : p[2]);
-        let M = p[0].length === 4 ? p[1] : p[1];
-        let D = p[0].length === 4 ? p[2] : p[0];
-        const target = new Date(Y, M-1, D, p[3]||0, p[4]||0, p[5]||0).getTime();
+        const target = new Date(p[0].length===4?p[0]:(p[2].length===2?"20"+p[2]:p[2]), p[1]-1, p[0].length===4?p[2]:p[0], p[3]||0, p[4]||0, p[5]||0).getTime();
         
         if (this.dom['full-date-display']) {
             this.dom['full-date-display'].innerText = new Date(target).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
@@ -188,9 +175,9 @@ const UI = {
         }
         
         const tick = () => {
-            const d = target - Date.now();
-            if (d <= 0) return this.showStatic(msg);
-            const vals = { days: Math.floor(d/864e5), hours: Math.floor((d%864e5)/36e5), minutes: Math.floor((d%36e5)/6e4), seconds: Math.floor((d%6e4)/1e3) };
+            const diff = target - Date.now();
+            if (diff <= 0) return this.showStatic(msg);
+            const vals = { days: Math.floor(diff/864e5), hours: Math.floor((diff%864e5)/36e5), minutes: Math.floor((diff%36e5)/6e4), seconds: Math.floor((diff%6e4)/1e3) };
             Object.keys(vals).forEach(u => {
                 if (this.dom[u]) {
                     this.dom[u].innerText = vals[u].toString().padStart(2, '0');
