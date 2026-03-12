@@ -8,7 +8,11 @@
     <meta name="theme-color" content="#0f1115">
     <link rel="manifest" href="manifest.json?v=final">
     <link rel="dns-prefetch" href="https://timer-92fdd-default-rtdb.europe-west1.firebasedatabase.app">
-    <link rel="preconnect" href="https://raw.githubusercontent.com">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600&display=swap" rel="stylesheet">
+    
     <title>next adventure</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text x=%2250%22 y=%2250%22 dominant-baseline=%22central%22 text-anchor=%22middle%22 font-size=%2280%22>🕒</text></svg>">
     <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 fill=%22%230f1115%22/><text x=%2250%22 y=%2250%22 dominant-baseline=%22central%22 text-anchor=%22middle%22 font-size=%2265%22>🕒</text></svg>">
@@ -17,20 +21,21 @@
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; -webkit-user-select: none; user-select: none; }
         html { height: 101%; background-color: var(--bg-dark); scrollbar-width: none; }
         
-        /* OPTIMIZED: Removed heavy SVG filter, using pure hardware-accelerated gradients */
+        /* OPTIMIZED: Identical fonts & cross-gamut color consistency */
         body { 
             margin: 0; width: 100%; min-height: 101vh; 
             background-color: var(--bg-dark); 
-            background-image: radial-gradient(circle at top, #1a1d24, var(--bg-dark)); 
+            background-image: radial-gradient(circle at top, rgba(255,255,255,0.03), transparent 70%); 
             color: var(--accent); 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+            font-family: 'Inter', sans-serif; 
             -webkit-font-smoothing: antialiased; 
+            -moz-osx-font-smoothing: grayscale;
             text-rendering: optimizeLegibility;
             display: flex; justify-content: center; align-items: center; 
             transition: background-color 0.5s ease; -ms-overflow-style: none; 
         }
         html::-webkit-scrollbar, body::-webkit-scrollbar { display: none !important; width: 0 !important; height: 0 !important; }
-        body.light-mode { background-color: var(--bg-light); background-image: radial-gradient(circle at top, #ffffff, var(--bg-light)); color: #2d3748; }
+        body.light-mode { background-color: var(--bg-light); background-image: radial-gradient(circle at top, rgba(0,0,0,0.02), transparent 70%); color: #2d3748; }
 
         .sync-reveal { opacity: 0; transform: translate3d(0, 8px, 0); transition: opacity 1s cubic-bezier(0.2, 0, 0, 1), transform 1s cubic-bezier(0.2, 0, 0, 1); }
         .sync-reveal.reveal { opacity: 1 !important; transform: translate3d(0, 0, 0); }
@@ -44,8 +49,10 @@
         #full-date-display, #description-display { margin-bottom: 40px; font-size: 0.95rem; font-weight: 400; opacity: 0.6; line-height: 1.5; letter-spacing: 0.02em; }
         
         #countdown { display: flex; justify-content: center; align-items: center; width: 100%; max-width: 420px; transition: opacity 0.5s ease; gap: 12px; }
-        .time-box { flex: 1; display: flex; flex-direction: column; align-items: center; contain: strict; height: 85px; }
-        .time-box span { font-family: 'SF Mono', 'ui-monospace', monospace; font-size: clamp(2.4rem, 8vw, 3.8rem); font-weight: 200; display: block; line-height: 1; font-variant-numeric: tabular-nums; transition: all 0.5s ease; letter-spacing: -0.02em; }
+        .time-box { flex: 1; display: flex; flex-direction: column; align-items: center; height: 85px; }
+        
+        /* OPTIMIZED: Identical monospace rendering for timer */
+        .time-box span { font-family: 'Inter', monospace; font-size: clamp(2.4rem, 8vw, 3.8rem); font-weight: 200; display: block; line-height: 1; font-variant-numeric: tabular-nums; transition: all 0.5s ease; letter-spacing: -0.02em; }
         .time-box span.is-due { opacity: 0.08; filter: blur(0.5px); transform: scale(0.95); }
         
         .label { font-size: 0.55rem; text-transform: uppercase; letter-spacing: 0.25em; margin-top: 14px; color: rgba(255, 255, 255, 0.3); font-weight: 500; }
@@ -53,7 +60,6 @@
 
         #task-section { position: relative; width: 100%; max-width: 400px; margin: 50px auto 0 auto; text-align: left; padding-bottom: 25px; }
         
-        /* OPTIMIZED: Input field floats borderless until focused */
         #new-task-input { width: 100%; background: transparent; border: none; border-bottom: 1px solid transparent; color: inherit; font-family: inherit; font-size: 0.95rem; padding: 10px 0; margin-bottom: 15px; outline: none; transition: border-color 0.3s ease; letter-spacing: 0.02em; }
         #new-task-input::placeholder { color: rgba(255,255,255,0.3); font-weight: 300; }
         #new-task-input:focus { border-bottom: 1px solid rgba(255,255,255,0.2); }
@@ -105,7 +111,17 @@
         
         #cat-perch { position: fixed; bottom: var(--safe-bottom); left: calc(20px + env(safe-area-inset-left, 20px)); width: 100px; height: 100px; z-index: 999; cursor: pointer; }
         @media (min-width: 1024px) { #cat-perch { width: 180px; height: 180px; } }
-        .cat-image { width: 100%; height: 100%; background-size: contain; background-repeat: no-repeat; background-position: bottom left; contain: strict; pointer-events: none; }
+        
+        /* OPTIMIZED: WebKit opacity & alpha layer fix for Suri rendering */
+        .cat-image { 
+            width: 100%; height: 100%; 
+            background-size: contain; background-repeat: no-repeat; background-position: bottom left; 
+            pointer-events: none;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            transform: translateZ(0);
+            opacity: 1 !important;
+        }
         
         .suri-1 { background-image: url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri1.png'); }
         .suri-2 { background-image: url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri2.png'); }
