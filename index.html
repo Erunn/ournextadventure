@@ -49,7 +49,6 @@
         .label { font-size: 0.55rem; text-transform: uppercase; letter-spacing: 0.25em; margin-top: 14px; color: rgba(255, 255, 255, 0.3); font-weight: 500; }
         body.light-mode .label { color: rgba(0, 0, 0, 0.35); }
 
-        /* Task Section updated to relative so the indicator can position itself at the bottom */
         #task-section { position: relative; width: 100%; max-width: 400px; margin: 50px auto 0 auto; text-align: left; padding-bottom: 25px; }
         
         #new-task-input { width: 100%; background: transparent; border: none; border-bottom: 1px solid rgba(255,255,255,0.05); color: inherit; font-family: inherit; font-size: 0.9rem; padding: 10px 0; margin-bottom: 15px; outline: none; transition: all 0.3s ease; letter-spacing: 0.02em; }
@@ -90,4 +89,77 @@
         .edit-task-input { flex: 1; background: transparent; border: none; border-bottom: 1px solid rgba(255,255,255,0.4); color: inherit; font-family: inherit; font-size: 0.95rem; padding: 7px 0; margin-right: 12px; outline: none; letter-spacing: 0.02em; }
         body.light-mode .edit-task-input { border-bottom: 1px solid rgba(0,0,0,0.4); }
         
-        /*
+        #scroll-indicator {
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0; 
+            transition: opacity 0.4s ease;
+            pointer-events: none; 
+            color: rgba(255, 255, 255, 0.35);
+            animation: breathe 2s infinite ease-in-out;
+        }
+        body.light-mode #scroll-indicator { color: rgba(0, 0, 0, 0.35); }
+        #scroll-indicator svg { width: 18px; height: 18px; }
+        @keyframes breathe {
+            0%, 100% { transform: translate(-50%, 0); }
+            50% { transform: translate(-50%, 4px); }
+        }
+
+        #theme-toggle { position: fixed; bottom: calc(20px + var(--safe-bottom)); right: calc(30px + env(safe-area-inset-right, 20px)); border: none; background: none; cursor: pointer; padding: 12px; color: inherit; opacity: 0.25; transition: opacity 0.4s ease; z-index: 100; }
+        #theme-toggle:hover { opacity: 0.6; }
+        
+        #cat-perch { position: fixed; bottom: var(--safe-bottom); left: calc(20px + env(safe-area-inset-left, 20px)); width: 100px; height: 100px; z-index: 999; cursor: pointer; }
+        @media (min-width: 1024px) { #cat-perch { width: 180px; height: 180px; } }
+        .cat-image { width: 100%; height: 100%; background-size: contain; background-repeat: no-repeat; background-position: bottom left; contain: strict; pointer-events: none; }
+        
+        .suri-1 { background-image: url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri1.png'); }
+        .suri-2 { background-image: url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri2.png'); }
+        .suri-3 { background-image: url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri3.png'); }
+        .suri-4 { background-image: url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri4.png'); }
+        .suri-5 { background-image: url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri5.png'); }
+        .suri-6 { background-image: url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri6.png'); }
+        .suri-7 { background-image: url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri7.png'); }
+    </style>
+</head>
+<body>
+    <div id="cat-perch" class="sync-reveal"></div> 
+    
+    <button id="theme-toggle" class="sync-reveal" aria-label="Toggle Theme">
+        <svg id="sun-icon" style="display:none;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+        <svg id="moon-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+    </button>
+    
+    <main class="timer-container sync-reveal">
+        <h1 id="event-name"></h1>
+        <div id="full-date-display" style="display:none;"></div>
+        <div id="description-display" style="display:none;"></div>
+        
+        <div id="countdown" style="display:none;">
+            <div class="time-box"><span id="days">00</span><div class="label">days</div></div>
+            <div class="time-box"><span id="hours">00</span><div class="label">hrs</div></div>
+            <div class="time-box"><span id="minutes">00</span><div class="label">min</div></div>
+            <div class="time-box"><span id="seconds">00</span><div class="label">sec</div></div>
+        </div>
+
+        <section id="task-section" style="display:none;">
+            <input type="text" id="new-task-input" placeholder="+ add a task..." autocomplete="off">
+            <ul id="task-list"></ul>
+            
+            <div id="scroll-indicator">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </div>
+        </section>
+    </main>
+    
+    <script src="script.js?v=nuclear" defer></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js').catch(() => {});
+            });
+        }
+    </script>
+</body>
+</html>
