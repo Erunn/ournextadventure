@@ -1,5 +1,5 @@
 const UI = {
-    state: { isRevealed: false, timer: null, last: {}, tasks: [] },
+    state: { isRevealed: false, timer: null, last: {}, tasks: [], noPolaroidMsg: "" },
     config: { DB_BASE: "https://timer-92fdd-default-rtdb.europe-west1.firebasedatabase.app", SURI_TOTAL: 7 },
     dom: {}, 
     
@@ -10,9 +10,7 @@ const UI = {
         this.initTheme();
         this.initTasks();
         this.load();
-        
         this.dom['cat-perch']?.addEventListener('pointerdown', e => { e.preventDefault(); this.renderSuri(); });
-        
         let scrollTicking = false;
         this.dom['task-list']?.addEventListener('scroll', () => {
             if (!scrollTicking) {
@@ -32,7 +30,7 @@ const UI = {
         if (!lb) return;
 
         if (show) {
-            // PHOTO CHECK: If you want to show a photo, put the link here.
+            // Logic: Check for a photo URL (you can also put this in DB if you want)
             const photoUrl = ""; 
 
             if (photoUrl && photoUrl !== "") {
@@ -42,6 +40,8 @@ const UI = {
             } else {
                 img.style.display = "none";
                 empty.style.display = "flex";
+                // Show the message from the DB
+                empty.innerText = this.state.noPolaroidMsg || "Memory pending... ❤️";
             }
             lb.classList.add('open');
             document.body.style.overflow = 'hidden';
@@ -61,12 +61,7 @@ const UI = {
 
     initTasks() {
         const stored = localStorage.getItem('adventure_tasks');
-        if (stored) { 
-            try { 
-                const data = JSON.parse(stored);
-                this.state.tasks = Array.isArray(data) ? data.filter(t => t) : []; 
-            } catch(e) { this.state.tasks = []; } 
-        }
+        if (stored) { try { this.state.tasks = JSON.parse(stored).filter(t => t); } catch(e) { this.state.tasks = []; } }
         this.renderTasks();
         this.dom['new-task-input']?.addEventListener('keypress', e => {
             if (e.key === 'Enter' && e.target.value.trim()) {
@@ -80,19 +75,13 @@ const UI = {
     async syncTasks() {
         localStorage.setItem('adventure_tasks', JSON.stringify(this.state.tasks));
         this.renderTasks();
-        try { 
-            await fetch(`${this.config.DB_BASE}/tasks.json`, { 
-                method: 'PUT', 
-                body: JSON.stringify(this.state.tasks) 
-            }); 
-        } catch (e) { console.error("Sync failed", e); }
+        try { await fetch(`${this.config.DB_BASE}/tasks.json`, { method: 'PUT', body: JSON.stringify(this.state.tasks) }); } catch (e) { }
     },
     
     renderTasks() {
         if (!this.dom['task-list']) return;
         const frag = document.createDocumentFragment();
         const sorted = [...this.state.tasks].sort((a, b) => (a.done === b.done) ? b.id - a.id : a.done ? 1 : -1);
-
         sorted.forEach(t => {
             const li = document.createElement('li');
             if (t.done) li.classList.add('done');
@@ -100,23 +89,17 @@ const UI = {
             txt.className = 'task-text';
             txt.innerText = t.text;
             txt.onclick = () => { t.done = !t.done; this.syncTasks(); };
-            
             const acts = document.createElement('div');
             acts.className = 'task-actions';
-
             const edit = document.createElement('button');
             edit.className = 'action-btn';
             edit.innerHTML = `<svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>`;
             edit.onclick = (e) => { e.stopPropagation(); this.enterEditMode(li, t); };
-
             const del = document.createElement('button');
             del.className = 'action-btn';
             del.innerHTML = `<svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>`;
             del.onclick = (e) => { e.stopPropagation(); this.state.tasks = this.state.tasks.filter(x => x.id !== t.id); this.syncTasks(); };
-
-            acts.append(edit, del);
-            li.append(txt, acts);
-            frag.appendChild(li);
+            acts.append(edit, del); li.append(txt, acts); frag.appendChild(li);
         });
         this.dom['task-list'].replaceChildren(frag);
         setTimeout(() => this.checkScroll(), 150);
@@ -169,6 +152,10 @@ const UI = {
         try {
             const r = await fetch(`${this.config.DB_BASE}/.json?v=${Date.now()}`);
             const d = await r.json();
+            
+            // SAVE THE DB PARAMETER
+            this.state.noPolaroidMsg = d.noPolaroidMessage;
+
             if (d.tasks) { 
                 const rawTasks = Array.isArray(d.tasks) ? d.tasks : Object.values(d.tasks);
                 this.state.tasks = rawTasks.filter(t => t); 
