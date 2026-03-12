@@ -4,9 +4,8 @@ const UI = {
     dom: {}, 
     
     init() {
-        ['event-name', 'full-date-display', 'description-display', 'countdown', 'days', 'hours', 'minutes', 'seconds', 'cat-perch', 'theme-toggle', 'sun-icon', 'moon-icon', 'task-section', 'task-list', 'new-task-input'].forEach(id => {
-            this.dom[id] = document.getElementById(id);
-        });
+        const ids = ['event-name', 'full-date-display', 'description-display', 'countdown', 'days', 'hours', 'minutes', 'seconds', 'cat-perch', 'theme-toggle', 'sun-icon', 'moon-icon', 'task-section', 'task-list', 'new-task-input'];
+        ids.forEach(id => this.dom[id] = document.getElementById(id));
 
         this.renderSuri();
         this.initTheme();
@@ -14,28 +13,29 @@ const UI = {
         this.load();
         
         if (this.dom['cat-perch']) {
-            this.dom['cat-perch'].addEventListener('pointerdown', e => { e.stopPropagation(); this.renderSuri(); });
+            this.dom['cat-perch'].addEventListener('pointerdown', (e) => {
+                e.preventDefault();
+                this.renderSuri();
+            });
         }
     },
     
     initTasks() {
         const stored = localStorage.getItem('adventure_tasks');
         if (stored) {
-            try {
-                this.state.tasks = JSON.parse(stored).filter(t => t);
-            } catch (e) { this.state.tasks = []; }
-            this.renderTasks();
+            try { this.state.tasks = JSON.parse(stored).filter(t => t); } 
+            catch (e) { this.state.tasks = []; }
         }
+        this.renderTasks();
 
-        if (this.dom['new-task-input']) {
-            this.dom['new-task-input'].addEventListener('keypress', e => {
-                if (e.key === 'Enter' && e.target.value.trim()) {
-                    this.state.tasks.push({ id: Date.now(), text: e.target.value.trim(), done: false });
-                    e.target.value = '';
-                    this.syncTasks(); 
-                }
-            });
-        }
+        this.dom['new-task-input']?.addEventListener('keypress', e => {
+            if (e.key === 'Enter' && e.target.value.trim()) {
+                const newTask = { id: Date.now(), text: e.target.value.trim(), done: false };
+                this.state.tasks.push(newTask);
+                e.target.value = '';
+                this.syncTasks(); 
+            }
+        });
     },
 
     async syncTasks() {
@@ -46,7 +46,7 @@ const UI = {
                 method: 'PUT',
                 body: JSON.stringify(this.state.tasks)
             });
-        } catch (e) { console.error(e); }
+        } catch (e) { console.error("Sync error:", e); }
     },
     
     toggleTask(id) {
@@ -79,8 +79,7 @@ const UI = {
         input.onkeypress = (e) => { if (e.key === 'Enter') save(); };
         saveBtn.onclick = save;
 
-        li.appendChild(input);
-        li.appendChild(saveBtn);
+        li.append(input, saveBtn);
         setTimeout(() => input.focus(), 50);
     },
     
@@ -133,20 +132,17 @@ const UI = {
         const isL = localStorage.getItem('th') === 'l';
         if (isL) document.body.classList.add('light-mode');
         this.updIcons(isL);
-        if (this.dom['theme-toggle']) {
-            this.dom['theme-toggle'].onclick = () => {
-                const l = document.body.classList.toggle('light-mode');
-                localStorage.setItem('th', l ? 'l' : 'd');
-                this.updIcons(l);
-            };
-        }
+        this.dom['theme-toggle'].onclick = () => {
+            const l = document.body.classList.toggle('light-mode');
+            localStorage.setItem('th', l ? 'l' : 'd');
+            this.updIcons(l);
+        };
     },
 
     updIcons(l) {
         if (this.dom['sun-icon']) this.dom['sun-icon'].style.display = l ? 'block' : 'none';
         if (this.dom['moon-icon']) this.dom['moon-icon'].style.display = l ? 'none' : 'block';
-        const m = document.querySelector('meta[name="theme-color"]');
-        if (m) m.setAttribute("content", l ? "#f4f5f7" : "#0f1115");
+        document.querySelector('meta[name="theme-color"]')?.setAttribute("content", l ? "#f4f5f7" : "#0f1115");
     },
 
     async load() {
@@ -193,8 +189,8 @@ const UI = {
 
     showStatic(m) {
         if (this.state.timer) clearInterval(this.state.timer);
-        if (this.dom['countdown']) this.dom['countdown'].style.display = "none";
-        if (this.dom['full-date-display']) this.dom['full-date-display'].style.display = "none";
+        this.dom['countdown'].style.display = "none";
+        this.dom['full-date-display'].style.display = "none";
         if (this.dom['description-display']) { this.dom['description-display'].style.display = "block"; this.dom['description-display'].innerText = m; }
         if (this.dom['task-section']) this.dom['task-section'].style.display = "block";
         this.reveal();
