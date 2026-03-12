@@ -40,10 +40,8 @@
         
         .timer-container { position: relative; text-align: center; width: 90%; max-width: 450px; z-index: 10; display: flex; flex-direction: column; align-items: center; }
         
-        h1 { font-weight: 500; letter-spacing: -0.05em; font-size: clamp(1.8rem, 6vw, 2.5rem); margin: 0 0 10px 0; text-transform: lowercase; line-height: 1.2; }
+        h1 { font-weight: 500; letter-spacing: -0.05em; font-size: clamp(1.8rem, 6vw, 2.5rem); margin: 0 0 10px 0; text-transform: lowercase; }
         h1 span { font-size: 0.8em; margin-left: 8px; }
-        
-        #full-date-display { margin-bottom: 30px; font-size: 0.9rem; opacity: 0.5; font-weight: 400; }
         
         #countdown { display: flex; justify-content: center; gap: 15px; margin-bottom: 40px; width: 100%; }
         .time-box { flex: 1; display: flex; flex-direction: column; align-items: center; }
@@ -53,10 +51,8 @@
 
         #task-section { position: relative; width: 100%; max-width: 380px; margin-top: 20px; text-align: left; }
         #new-task-input { width: 100%; background: transparent; border: none; border-bottom: 1px solid transparent; color: inherit; font-family: inherit; font-size: 0.95rem; padding: 12px 0; transition: border 0.3s; }
-        #new-task-input::placeholder { color: rgba(128,128,128,0.4); }
         #new-task-input:focus { border-bottom: 1px solid rgba(128,128,128,0.2); }
 
-        /* The Masked List Area */
         .list-container { position: relative; width: 100%; margin-top: 5px; }
         #task-list { 
             list-style: none; padding: 0; margin: 0; 
@@ -72,23 +68,27 @@
         li.done .task-text { text-decoration: line-through; opacity: 0.3; }
         li.done .task-text::before { content: '●'; opacity: 0.8; }
         
-        .task-actions { display: flex; gap: 4px; opacity: 0; transition: opacity 0.2s; }
-        #task-list li:hover .task-actions { opacity: 1; }
-        @media (hover: none) { .task-actions { opacity: 0.4; } }
-        
-        .action-btn { background: transparent; border: none; color: inherit; padding: 8px; cursor: pointer; display: flex; align-items: center; opacity: 0.6; }
-        .action-btn svg { width: 16px; height: 16px; }
+        .action-btn { background: transparent; border: none; color: inherit; padding: 8px; cursor: pointer; display: flex; align-items: center; opacity: 0.4; transition: opacity 0.2s; }
+        .action-btn:hover { opacity: 1; }
+        .action-btn svg { width: 16px; height: 16px; stroke: currentColor; fill: none; }
 
-        /* More Tasks Indicator */
+        /* SCROLL INDICATOR FIX: Defined size and stroke */
         #scroll-indicator {
-            position: absolute; bottom: -20px; left: 50%; transform: translateX(-50%);
-            opacity: 0; transition: opacity 0.3s; color: inherit; pointer-events: none;
+            position: absolute; bottom: -25px; left: 50%; transform: translateX(-50%);
+            opacity: 0; transition: opacity 0.3s; pointer-events: none;
+            display: flex; justify-content: center;
         }
-        #scroll-indicator.visible { opacity: 0.4; animation: bounce 2s infinite; }
+        #scroll-indicator svg { width: 20px; height: 20px; stroke: currentColor; fill: none; }
+        #scroll-indicator.visible { opacity: 0.5; animation: bounce 2s infinite; }
         @keyframes bounce { 0%, 20%, 50%, 80%, 100% {transform: translate(-50%, 0);} 40% {transform: translate(-50%, -5px);} 60% {transform: translate(-50%, -3px);} }
 
-        /* Floating UI Elements */
-        #theme-toggle { position: fixed; bottom: 30px; right: 30px; border: none; background: none; opacity: 0.3; cursor: pointer; color: inherit; z-index: 100; padding: 10px; }
+        /* THEME TOGGLE FIX: Standardized position and sizing */
+        #theme-toggle { 
+            position: fixed; top: 30px; right: 30px; 
+            border: none; background: none; opacity: 0.3; 
+            cursor: pointer; color: inherit; z-index: 100; padding: 10px;
+        }
+        #theme-toggle svg { width: 20px; height: 20px; stroke: currentColor; fill: none; }
         
         #cat-perch { position: fixed; bottom: 20px; left: 20px; width: 100px; height: 100px; z-index: 999; cursor: pointer; }
         @media (min-width: 1024px) { #cat-perch { width: 160px; height: 160px; } }
@@ -107,13 +107,12 @@
     <div id="cat-perch" class="sync-reveal"></div> 
     
     <button id="theme-toggle" class="sync-reveal">
-        <svg id="sun-icon" style="display:none;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="5"></circle><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path></svg>
-        <svg id="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+        <svg id="sun-icon" style="display:none;" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+        <svg id="moon-icon" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
     </button>
     
     <main class="timer-container sync-reveal">
         <h1 id="event-name"></h1>
-        <div id="full-date-display" style="display:none;"></div>
         
         <div id="countdown" style="display:none;">
             <div class="time-box"><span id="days">00</span><div class="label">days</div></div>
@@ -126,11 +125,13 @@
             <input type="text" id="new-task-input" placeholder="I would love to..." autocomplete="off">
             <div class="list-container">
                 <ul id="task-list"></ul>
-                <div id="scroll-indicator">⌄</div>
+                <div id="scroll-indicator">
+                    <svg viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </div>
             </div>
         </section>
     </main>
     
-    <script src="main.js?v=zen_final" defer></script>
+    <script>document.write('<script src="main.js?v=' + Date.now() + '"><\/script>');</script>
 </body>
 </html>
