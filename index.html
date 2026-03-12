@@ -6,6 +6,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#0f1115">
+    <link rel="manifest" href="manifest.json?v=final">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -18,7 +19,7 @@
         
         html, body { height: 100dvh; width: 100%; margin: 0; overflow: hidden; overscroll-behavior: none; background-color: var(--bg-dark); }
         body { color: var(--accent); font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; display: flex; justify-content: center; align-items: center; transition: background-color 0.5s ease; }
-        body.light-mode { background-color: var(--bg-light); color: #2d3748; --accent: #2d3748; }
+        body.light-mode { background-color: var(--bg-light); color: #2d3748; }
 
         .sync-reveal { opacity: 0; transform: translateY(8px); transition: opacity 0.8s ease, transform 0.8s ease; }
         .sync-reveal.reveal { opacity: 1 !important; transform: translateY(0); }
@@ -36,7 +37,7 @@
         .label { font-size: 0.55rem; text-transform: uppercase; letter-spacing: 0.25em; margin-top: 14px; opacity: 0.3; }
 
         #task-section { position: relative; width: 100%; max-width: 400px; margin: 50px auto 0 auto; text-align: left; }
-        #new-task-input { width: 100%; background: transparent; border: none; border-bottom: 1px solid transparent; color: inherit; font-family: inherit; font-size: 0.95rem; padding: 10px 0; outline: none; }
+        #new-task-input { width: 100%; background: transparent; border: none; border-bottom: 1px solid transparent; color: inherit; font-family: inherit; font-size: 0.95rem; padding: 10px 0; margin-bottom: 15px; outline: none; }
         #new-task-input::placeholder { color: rgba(128,128,128,0.4); }
         #new-task-input:focus { border-bottom: 1px solid rgba(128,128,128,0.2); }
 
@@ -61,31 +62,40 @@
         #cat-perch { position: fixed; bottom: env(safe-area-inset-bottom, 20px); left: 20px; width: 100px; height: 100px; z-index: 999; cursor: pointer; }
         @media (min-width: 1024px) { #cat-perch { width: 170px; height: 170px; } }
         
-        /* THE ULTIMATE SURI FIX: Pure color tinting */
+        /* THE ULTIMATE VECTOR CLEANER */
         .cat-image { 
             width: 100%; height: 100%; 
-            background-color: var(--accent); /* This colors the cat */
-            -webkit-mask-size: contain; mask-size: contain;
-            -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
-            -webkit-mask-position: bottom left; mask-position: bottom left;
-            opacity: 0.8; /* Slight transparency for elegance */
+            background-size: contain; background-repeat: no-repeat; background-position: bottom left;
+            /* Applying the Alpha-Threshold Filter below to delete watermarks */
+            filter: url(#clean-vector);
+            -webkit-filter: url(#clean-vector);
+            opacity: 1 !important;
         }
         
-        .suri-1 { -webkit-mask-image: url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri1.png'); mask-image: url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri1.png'); }
-        .suri-2 { -webkit-mask-image: url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri2.png'); mask-image: url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri2.png'); }
-        .suri-3 { -webkit-mask-image: url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri3.png'); mask-image: url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri3.png'); }
-        .suri-4 { -webkit-mask-image: url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri4.png'); mask-image: url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri4.png'); }
-        .suri-5 { -webkit-mask-image: url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri5.png'); mask-image: url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri5.png'); }
-        .suri-6 { -webkit-mask-image: url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri6.png'); mask-image: url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri6.png'); }
-        .suri-7 { -webkit-mask-image: url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri7.png'); mask-image: url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri7.png'); }
+        .suri-1 { background-image: url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri1.png'); }
+        .suri-2 { background-image: url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri2.png'); }
+        .suri-3 { background-image: url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri3.png'); }
+        .suri-4 { background-image: url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri4.png'); }
+        .suri-5 { background-image: url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri5.png'); }
+        .suri-6 { background-image: url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri6.png'); }
+        .suri-7 { background-image: url('https://raw.githubusercontent.com/Erunn/ournextadventure/main/suri7.png'); }
     </style>
 </head>
 <body>
+    <svg style="position: absolute; width: 0; height: 0;">
+      <filter id="clean-vector" color-interpolation-filters="sRGB">
+        <feComponentTransfer>
+          <feFuncA type="discrete" tableValues="0 0 0 0 0 0 0 0 0 1"/>
+        </feComponentTransfer>
+      </filter>
+    </svg>
+
     <div id="cat-perch" class="sync-reveal"></div> 
     <button id="theme-toggle" class="sync-reveal">
         <svg id="sun-icon" style="display:none;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
         <svg id="moon-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
     </button>
+    
     <main class="timer-container sync-reveal">
         <h1 id="event-name"></h1>
         <div id="full-date-display" style="display:none;"></div>
@@ -102,6 +112,6 @@
         </section>
     </main>
     
-    <script>document.write('<script src="main.js?v=' + Date.now() + '"><\/script>');</script>
+    <script src="main.js?v=FIX_2026_V100" defer></script>
 </body>
 </html>
