@@ -12,10 +12,9 @@ const UI = {
         this.initTasks();
         this.load();
         
-        if (this.dom['cat-perch']) {
-            this.dom['cat-perch'].addEventListener('pointerdown', e => { e.preventDefault(); this.renderSuri(); });
-        }
-        this.dom['task-list']?.addEventListener('scroll', () => this.checkScroll());
+        this.dom['cat-perch']?.addEventListener('pointerdown', e => { e.preventDefault(); this.renderSuri(); });
+        // Use passive scroll listener for better mobile performance
+        this.dom['task-list']?.addEventListener('scroll', () => this.checkScroll(), { passive: true });
     },
     
     checkScroll() {
@@ -67,6 +66,7 @@ const UI = {
             
             const del = document.createElement('button');
             del.className = 'action-btn';
+            del.ariaLabel = "Delete task";
             del.innerHTML = `<svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>`;
             del.onclick = (e) => { e.stopPropagation(); this.state.tasks = this.state.tasks.filter(x => x.id !== t.id); this.syncTasks(); };
 
@@ -74,7 +74,7 @@ const UI = {
             frag.appendChild(li);
         });
         this.dom['task-list'].replaceChildren(frag);
-        setTimeout(() => this.checkScroll(), 100);
+        setTimeout(() => this.checkScroll(), 150);
     },
 
     renderSuri() {
@@ -112,7 +112,7 @@ const UI = {
             }
 
             const em = d.emojiLibrary?.[d.emoji?.toLowerCase()] || "";
-            if (this.dom['event-name']) this.dom['event-name'].innerHTML = d.eventName + (em ? ` <span>${em}</span>` : "");
+            if (this.dom['event-name']) this.dom['event-name'].innerHTML = (d.eventName || "next adventure") + (em ? ` <span>${em}</span>` : "");
             
             if (this.dom['task-section']) this.dom['task-section'].style.display = "block";
 
@@ -136,7 +136,6 @@ const UI = {
         
         const tick = () => {
             const diff = target - Date.now();
-            
             if (diff <= 0) return this.showStatic(celebrationMsg || "Time's up!");
 
             const vals = { 
@@ -149,13 +148,9 @@ const UI = {
             Object.keys(vals).forEach(u => {
                 if (this.dom[u]) {
                     this.dom[u].innerText = vals[u].toString().padStart(2, '0');
-                    if (u === 'days') {
-                        this.dom[u].classList.toggle('is-due', vals.days === 0);
-                    } else if (u === 'hours') {
-                        this.dom[u].classList.toggle('is-due', vals.days === 0 && vals.hours === 0);
-                    } else if (u === 'minutes') {
-                        this.dom[u].classList.toggle('is-due', vals.days === 0 && vals.hours === 0 && vals.minutes === 0);
-                    }
+                    if (u === 'days') this.dom[u].classList.toggle('is-due', vals.days === 0);
+                    else if (u === 'hours') this.dom[u].classList.toggle('is-due', vals.days === 0 && vals.hours === 0);
+                    else if (u === 'minutes') this.dom[u].classList.toggle('is-due', vals.days === 0 && vals.hours === 0 && vals.minutes === 0);
                 }
             });
 
@@ -167,11 +162,8 @@ const UI = {
 
     showStatic(m) {
         if (this.state.timer) clearInterval(this.state.timer);
-        
-        // Use opacity swap instead of display:none
         this.dom['countdown']?.classList.add('hidden-v');
         this.dom['full-date-display']?.classList.add('hidden-v');
-        
         if (this.dom['description-display']) { 
             this.dom['description-display'].classList.remove('hidden-v');
             this.dom['description-display'].innerText = m || ""; 
