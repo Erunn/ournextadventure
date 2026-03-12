@@ -1,5 +1,4 @@
-// Bump this name anytime you make changes to your HTML, CSS, or JS!
-const CACHE_NAME = 'adventure-v7';
+const CACHE_NAME = 'adventure-v8';
 const ASSETS = ['/', '/index.html', '/script.js', '/manifest.json'];
 
 self.addEventListener('install', e => {
